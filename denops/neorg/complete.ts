@@ -3,21 +3,18 @@ import { UserData } from "./deps/lsp.ts";
 import { getLanguageList } from "./bindings.ts";
 import { Item } from "jsr:@shougo/ddc-vim@~9.1.0/types";
 
-export const getBuiltinElements: (ctx: Context) => Promise<Item<UserData>[]> =
+const makeStaticCompletion: (opt: {
+  pattern: RegExp;
+  candinates: string[];
+}) => (ctx: Context) => Promise<Item<UserData>[]> = (opt) =>
   (() => {
-    const pattern = /^\s*@(\w)*/;
-    const candinates = [
-      "code",
-      "image",
-      "document",
-    ];
     return (ctx) => {
-      const matches = pattern.exec(ctx.input);
+      const matches = opt.pattern.exec(ctx.input);
       if (matches === null) {
         return Promise.resolve([]);
       }
       const input = matches[1];
-      const items = candinates.map((c) => {
+      const items = opt.candinates.map((c) => {
         if (input === "" || c.indexOf(input) < 0) {
           return undefined;
         }
@@ -29,6 +26,16 @@ export const getBuiltinElements: (ctx: Context) => Promise<Item<UserData>[]> =
       return Promise.resolve(items);
     };
   })();
+
+export const getBuiltinElements: (ctx: Context) => Promise<Item<UserData>[]> =
+  makeStaticCompletion({
+    pattern: /^\s*@(\w)*/,
+    candinates: [
+      "code",
+      "image",
+      "document",
+    ],
+  });
 
 // get languages if available.
 export const getLanguages: (ctx: Context) => Promise<Item<UserData>[]> =
