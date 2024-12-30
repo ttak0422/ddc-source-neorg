@@ -3,7 +3,7 @@ import { UserData } from "./deps/lsp.ts";
 import { getLanguageList } from "./bindings.ts";
 import { Item } from "jsr:@shougo/ddc-vim@~9.1.0/types";
 
-const makeStaticCompletion: (opt: {
+const makeSimpleStaticCompletion: (opt: {
   pattern: RegExp;
   candinates: string[];
 }) => (ctx: Context) => Promise<Item<UserData>[]> = (opt) =>
@@ -13,22 +13,12 @@ const makeStaticCompletion: (opt: {
       if (matches === null) {
         return Promise.resolve([]);
       }
-      const input = matches[1];
-      const items = opt.candinates.map((c) => {
-        if (input === "" || c.indexOf(input) < 0) {
-          return undefined;
-        }
-        const item: Item<UserData> = {
-          word: c,
-        };
-        return item;
-      }).filter((c) => c !== undefined);
-      return Promise.resolve(items);
+      return Promise.resolve(opt.candinates.map((c) => ({ word: c })));
     };
   })();
 
 export const getBuiltinElements: (ctx: Context) => Promise<Item<UserData>[]> =
-  makeStaticCompletion({
+  makeSimpleStaticCompletion({
     pattern: /^\s*@(\w)*/,
     candinates: [
       "code",
@@ -38,7 +28,7 @@ export const getBuiltinElements: (ctx: Context) => Promise<Item<UserData>[]> =
   });
 
 export const getMediaTypes: (ctx: Context) => Promise<Item<UserData>[]> =
-  makeStaticCompletion({
+  makeSimpleStaticCompletion({
     pattern: /^\s*@image\s(\w)*/,
     candinates: [
       "jpeg",
