@@ -31,6 +31,12 @@ export const getBuiltinElements: (ctx: Context) => Promise<Item<UserData>[]> =
     ],
   });
 
+export const getDocumentElements: (ctx: Context) => Promise<Item<UserData>[]> =
+  makeSimpleStaticCompletion({
+    pattern: /^\s*@document.$/,
+    candinates: ["meta"],
+  });
+
 export const getMediaTypes: (ctx: Context) => Promise<Item<UserData>[]> =
   makeSimpleStaticCompletion({
     pattern: /^\s*@image\s\w*/,

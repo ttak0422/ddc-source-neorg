@@ -1,5 +1,6 @@
 import {
   getBuiltinElements,
+  getDocumentElements,
   getLanguages,
   getMediaTypes,
   getTasks,
@@ -33,6 +34,7 @@ export class Source extends source.BaseSource<Params> {
     // TODO: implement other completions
     const completions = await Promise.all([
       getBuiltinElements(ctx),
+      getDocumentElements(ctx),
       getMediaTypes(ctx),
       getLanguages(ctx),
       getTasks(ctx),
