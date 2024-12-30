@@ -16,8 +16,6 @@ inputs: [
             (name: {
               inherit name;
               value = buildVimPlugin {
-                buildPhase = "";
-                distPhase = "";
                 version = (getAttr name inputs).rev or "latest";
                 pname = name;
                 src = getAttr name inputs;
