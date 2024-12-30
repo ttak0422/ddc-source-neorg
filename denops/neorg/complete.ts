@@ -37,6 +37,18 @@ export const getBuiltinElements: (ctx: Context) => Promise<Item<UserData>[]> =
     ],
   });
 
+export const getMediaTypes: (ctx: Context) => Promise<Item<UserData>[]> =
+  makeStaticCompletion({
+    pattern: /^\s*@image\s(\w)*/,
+    candinates: [
+      "jpeg",
+      "png",
+      "svg",
+      "jfif",
+      "exif",
+    ],
+  });
+
 // get languages if available.
 export const getLanguages: (ctx: Context) => Promise<Item<UserData>[]> =
   (() => {

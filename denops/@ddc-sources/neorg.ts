@@ -1,4 +1,8 @@
-import { getBuiltinElements, getLanguages } from "../neorg/complete.ts";
+import {
+  getBuiltinElements,
+  getLanguages,
+  getMediaTypes,
+} from "../neorg/complete.ts";
 import { source, types } from "../neorg/deps/ddc.ts";
 import { Context } from "../neorg/types.ts";
 import { UserData } from "./../neorg/deps/lsp.ts";
@@ -28,6 +32,7 @@ export class Source extends source.BaseSource<Params> {
     // TODO: implement other completions
     const completions = await Promise.all([
       getBuiltinElements(ctx),
+      getMediaTypes(ctx),
       getLanguages(ctx),
     ]).then((results) => results.flat());
 
