@@ -19,7 +19,7 @@ const makeSimpleStaticCompletion: (opt: {
 
 export const getBuiltinElements: (ctx: Context) => Promise<Item<UserData>[]> =
   makeSimpleStaticCompletion({
-    pattern: /^\s*@(\w)*/,
+    pattern: /^\s*@\w*$/,
     candinates: [
       "code",
       "image",
@@ -29,7 +29,7 @@ export const getBuiltinElements: (ctx: Context) => Promise<Item<UserData>[]> =
 
 export const getMediaTypes: (ctx: Context) => Promise<Item<UserData>[]> =
   makeSimpleStaticCompletion({
-    pattern: /^\s*@image\s(\w)*/,
+    pattern: /^\s*@image\s\w*/,
     candinates: [
       "jpeg",
       "png",
