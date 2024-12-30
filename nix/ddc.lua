@@ -8,10 +8,11 @@ call ddc#custom#patch_filetype(['norg'], {
 
 call ddc#custom#patch_global('sourceOptions', {
       \ 'around': {
-      \   'mark': 'A'
+      \   'mark': 'A',
       \ },
       \ 'neorg': {
-      \   'mark': 'N'
+      \   'mark': 'N',
+      \   'minAutoCompleteLength': 0,
       \ }})
 
 call ddc#custom#patch_global('sourceOptions', {
