@@ -2,6 +2,7 @@ import {
   getBuiltinElements,
   getLanguages,
   getMediaTypes,
+  getTasks,
 } from "../neorg/complete.ts";
 import { source, types } from "../neorg/deps/ddc.ts";
 import { Context } from "../neorg/types.ts";
@@ -34,6 +35,7 @@ export class Source extends source.BaseSource<Params> {
       getBuiltinElements(ctx),
       getMediaTypes(ctx),
       getLanguages(ctx),
+      getTasks(ctx),
     ]).then((results) => results.flat());
 
     return completions;
