@@ -1,4 +1,7 @@
 -- [nfnl] Compiled from fnl/ddc_source_neorg/init.fnl by https://github.com/Olical/nfnl, do not edit.
+local function cb(id, value)
+  return vim.api.nvim_call_function("ddc#callback", {id, value})
+end
 local function get_runtime_files(path)
   local tbl_21_auto = {}
   local i_22_auto = 0
@@ -13,7 +16,7 @@ local function get_runtime_files(path)
   return tbl_21_auto
 end
 local function get_current_buffer(id)
-  return vim.api.nvim_call_function("ddc#callback", {id, vim.api.nvim_buf_get_name(0)})
+  return cb(id, vim.api.nvim_buf_get_name(0))
 end
 local function get_language_list(id)
   local syntax = get_runtime_files("syntax/*.vim")
@@ -25,7 +28,7 @@ local function get_language_list(id)
       table.insert(files, f)
     end
   end
-  return vim.api.nvim_call_function("ddc#callback", {id, {languages = files}})
+  return cb(id, {languages = files})
 end
 local function get_current_workspace(id)
   local neorg = require("neorg")
@@ -33,6 +36,6 @@ local function get_current_workspace(id)
   local workspace = dirman.get_current_workspace()
   local name = workspace[1]
   local path = workspace[2]:tostring()
-  return vim.api.nvim_call_function("ddc#callback", {id, {name = name, path = path}})
+  return cb(id, {name = name, path = path})
 end
 return {["get-current-buffer"] = get_current_buffer, ["get-language-list"] = get_language_list, ["get-current-workspace"] = get_current_workspace}

@@ -1,3 +1,6 @@
+(fn cb [id value]
+  (vim.api.nvim_call_function "ddc#callback" [id value]))
+
 (fn get-runtime-files [path]
   (icollect [_ name (pairs (vim.api.nvim_get_runtime_file path true))]
     (vim.fn.fnamemodify name ":t:r")))
@@ -6,7 +9,7 @@
 
 ; get current buffer : (id: string) => [ id: string, path: string ]
 (fn get-current-buffer [id]
-  (vim.api.nvim_call_function "ddc#callback" [id (vim.api.nvim_buf_get_name 0)]))
+  (cb id (vim.api.nvim_buf_get_name 0)))
 
 ; get languages : (id: string) => [ id: string, { languages: string[] } ]
 (fn get-language-list [id]
@@ -17,7 +20,7 @@
     (each [_ fs (ipairs [syntax after-syntax parser])]
       (each [_ f (ipairs fs)]
         (table.insert files f)))
-    (vim.api.nvim_call_function "ddc#callback" [id {:languages files}])))
+    (cb id {:languages files})))
 
 ; get current workspace : (id: string) → [ id: string, { name: string, path: string } ]
 (fn get-current-workspace [id]
@@ -26,6 +29,6 @@
         workspace (dirman.get_current_workspace)
         name (. workspace 1)
         path (: (. workspace 2) :tostring)]
-    (vim.api.nvim_call_function "ddc#callback" [id {: name : path}])))
+    (cb id {: name : path})))
 
 {: get-current-buffer : get-language-list : get-current-workspace}
