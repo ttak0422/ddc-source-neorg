@@ -1,6 +1,7 @@
 import {
   getBuiltinElements,
   getDocumentElements,
+  getFiles,
   getLanguages,
   getMediaTypes,
   getTasks,
@@ -39,6 +40,7 @@ export class Source extends source.BaseSource<Params> {
       getMediaTypes(ctx),
       getLanguages(ctx),
       getTasks(ctx),
+      getFiles(ctx),
     ]).then((results) => results.flat());
 
     return completions;

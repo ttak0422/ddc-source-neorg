@@ -12,6 +12,9 @@ local function get_runtime_files(path)
   end
   return tbl_21_auto
 end
+local function get_current_buffer(id)
+  return vim.api.nvim_call_function("ddc#callback", {id, vim.api.nvim_buf_get_name(0)})
+end
 local function get_language_list(id)
   local syntax = get_runtime_files("syntax/*.vim")
   local after_syntax = get_runtime_files("after/syntax/*.vim")
@@ -24,4 +27,12 @@ local function get_language_list(id)
   end
   return vim.api.nvim_call_function("ddc#callback", {id, {languages = files}})
 end
-return {["get-language-list"] = get_language_list}
+local function get_current_workspace(id)
+  local neorg = require("neorg")
+  local dirman = neorg.modules.get_module("core.dirman")
+  local workspace = dirman.get_current_workspace()
+  local name = workspace[1]
+  local path = workspace[2]:tostring()
+  return vim.api.nvim_call_function("ddc#callback", {id, {name = name, path = path}})
+end
+return {["get-current-buffer"] = get_current_buffer, ["get-language-list"] = get_language_list, ["get-current-workspace"] = get_current_workspace}
