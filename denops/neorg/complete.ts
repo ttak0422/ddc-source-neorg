@@ -1,17 +1,19 @@
 import { fs, path } from "./deps/std.ts";
-import { Context } from "./types.ts";
 import { UserData } from "./deps/lsp.ts";
+import { types } from "./deps/ddc.ts";
+import { Context } from "./types.ts";
 import {
   getCurrentBuffer,
   getCurrentWorkspace,
   getLanguageList,
 } from "./bindings.ts";
-import { Item } from "jsr:@shougo/ddc-vim@~9.1.0/types";
+
+type CompletionItem = types.Item<UserData>;
 
 const makeSimpleStaticCompletion: (opt: {
   pattern: RegExp;
-  candinates: string[] | Item[];
-}) => (ctx: Context) => Promise<Item<UserData>[]> = (opt) =>
+  candinates: string[] | CompletionItem[];
+}) => (ctx: Context) => Promise<CompletionItem[]> = (opt) =>
   (() => {
     return (ctx) => {
       if (!opt.pattern.test(ctx.input) || opt.candinates.length === 0) {
@@ -21,12 +23,12 @@ const makeSimpleStaticCompletion: (opt: {
         const cs = opt.candinates as string[];
         return Promise.resolve(cs.map((c) => ({ word: c })));
       } else {
-        return Promise.resolve(opt.candinates as Item[]);
+        return Promise.resolve(opt.candinates as CompletionItem[]);
       }
     };
   })();
 
-export const getBuiltinElements: (ctx: Context) => Promise<Item<UserData>[]> =
+export const getBuiltinElements: (ctx: Context) => Promise<CompletionItem[]> =
   makeSimpleStaticCompletion({
     pattern: /^\s*@\w*$/,
     candinates: [
@@ -36,13 +38,13 @@ export const getBuiltinElements: (ctx: Context) => Promise<Item<UserData>[]> =
     ],
   });
 
-export const getDocumentElements: (ctx: Context) => Promise<Item<UserData>[]> =
+export const getDocumentElements: (ctx: Context) => Promise<CompletionItem[]> =
   makeSimpleStaticCompletion({
     pattern: /^\s*@document.$/,
     candinates: ["meta"],
   });
 
-export const getMediaTypes: (ctx: Context) => Promise<Item<UserData>[]> =
+export const getMediaTypes: (ctx: Context) => Promise<CompletionItem[]> =
   makeSimpleStaticCompletion({
     pattern: /^\s*@image\s\w*/,
     candinates: [
@@ -54,7 +56,7 @@ export const getMediaTypes: (ctx: Context) => Promise<Item<UserData>[]> =
     ],
   });
 
-export const getTasks: (ctx: Context) => Promise<Item<UserData>[]> =
+export const getTasks: (ctx: Context) => Promise<CompletionItem[]> =
   makeSimpleStaticCompletion({
     pattern: /^\s*[-*$~^]\s\(/,
     // lighweight impl
@@ -71,7 +73,7 @@ export const getTasks: (ctx: Context) => Promise<Item<UserData>[]> =
   });
 
 // get languages if available.
-export const getLanguages: (ctx: Context) => Promise<Item<UserData>[]> =
+export const getLanguages: (ctx: Context) => Promise<CompletionItem[]> =
   (() => {
     const pattern = /^\s*@code\s\w*$/;
     return async (ctx) => {
@@ -83,7 +85,7 @@ export const getLanguages: (ctx: Context) => Promise<Item<UserData>[]> =
     };
   })();
 
-export const getFiles = async (ctx: Context): Promise<Item<UserData>[]> => {
+export const getFiles = async (ctx: Context): Promise<CompletionItem[]> => {
   const complete = ctx.input.length >= 2 &&
     ctx.input.slice(ctx.completePos - 2, ctx.completePos) === "{:";
   if (!complete) {
