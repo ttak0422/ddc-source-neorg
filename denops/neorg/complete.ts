@@ -83,22 +83,19 @@ export const getLanguages: (ctx: Context) => Promise<Item<UserData>[]> =
     };
   })();
 
-export const getFiles: (ctx: Context) => Promise<Item<UserData>[]> = (() => {
-  const pattern = /^.*{:([^:}]*)/;
-  return async (ctx) => {
-    if (!pattern.test(ctx.input)) {
-      return [];
-    }
-    const workspace = await getCurrentWorkspace(ctx);
-    const entries = await Array.fromAsync(
-      fs.walk(workspace.path, { maxDepth: 20, includeDirs: false }),
-    );
-    const currentDir = await getCurrentBuffer(ctx).then(path.dirname);
-    const relativePaths = entries.filter((e) => e.name.endsWith(".norg"))
-      .map((e) => path.relative(currentDir, e.path));
-    // textedit
-    return relativePaths.map((p) => ({
-      word: `$/${p}:}`,
-    }));
-  };
-})();
+export const getFiles = async (ctx: Context): Promise<Item<UserData>[]> => {
+  const complete = ctx.input.length >= 2 &&
+    ctx.input.slice(ctx.completePos - 2, ctx.completePos) === "{:";
+  if (!complete) {
+    return [];
+  }
+  const workspace = await getCurrentWorkspace(ctx);
+  const entries = await Array.fromAsync(
+    fs.walk(workspace.path, { maxDepth: 20, includeDirs: false }),
+  );
+  const currentDir = await getCurrentBuffer(ctx).then(path.dirname);
+  const relativePaths = entries.filter((e) => e.name.endsWith(".norg"))
+    .map((e) => path.relative(currentDir, e.path));
+
+  return relativePaths.map((p) => ({ word: `$/${p}:` }));
+};
