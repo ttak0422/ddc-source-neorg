@@ -13,6 +13,7 @@ export type Params = {
   [K in PropertyKey]: never;
 };
 
+/** @deprecated use individual completions instead. */
 export class Source extends source.BaseSource<Params> {
   override params(): Params {
     return {};
