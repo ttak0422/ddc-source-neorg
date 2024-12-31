@@ -95,8 +95,10 @@ export const getFiles = async (ctx: Context): Promise<CompletionItem[]> => {
   const entries = await Array.fromAsync(
     fs.walk(workspace.path, { maxDepth: 20, includeDirs: false }),
   );
-  const currentDir = await getCurrentBuffer(ctx).then(path.dirname);
+  const currentPath = await getCurrentBuffer(ctx);
+  const currentDir = path.dirname(currentPath);
   const relativePaths = entries.filter((e) => e.name.endsWith(".norg"))
+    .filter((e) => e.path !== currentPath)
     .map((e) => path.relative(currentDir, e.path));
 
   return relativePaths.map((p) => ({ word: `$/${p}:` }));
