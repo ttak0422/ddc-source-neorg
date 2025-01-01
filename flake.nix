@@ -74,6 +74,12 @@
                   entry = "${pkgs.fnlfmt}/bin/fnlfmt";
                   files = "\\.fnl$";
                 };
+                vint = {
+                  enable = true;
+                  name = "vint";
+                  entry = "${pkgs.vim-vint}/bin/vint";
+                  files = "\\.vim$";
+                };
               };
             };
           };

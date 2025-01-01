@@ -4,6 +4,7 @@
   ...
 }:
 let
+  inherit (builtins) readFile;
   mkNeovimApp = cfg: {
     type = "app";
     program = "${
@@ -12,7 +13,7 @@ let
   };
   readLua = path: ''
     lua << EOF
-    ${builtins.readFile path}
+    ${readFile path}
     EOF
   '';
 in
@@ -36,10 +37,10 @@ in
       ddc-filter-sorter_rank
       self'.packages.ddc-source-neorg
     ];
-    customRC =
-      ''
-        let g:denops#deno = '${pkgs.deno}/bin/deno'
-      ''
-      + readLua ./ddc.lua;
+    customRC = ''
+      let g:denops#deno = '${pkgs.deno}/bin/deno'
+      ${readFile ./ddc.vim}
+      ${readLua ./ddc.lua}
+    '';
   };
 }
