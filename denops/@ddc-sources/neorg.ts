@@ -5,6 +5,7 @@ import {
   getFiles,
   getLanguages,
   getLocalFootnotes,
+  getLocalHeadings,
   getMediaTypes,
   getTasks,
 } from "../neorg/complete.ts";
@@ -45,6 +46,7 @@ export class Source extends source.BaseSource<Params> {
       getFiles(ctx),
       getAnchors(ctx),
       getLocalFootnotes(ctx),
+      getLocalHeadings(ctx),
     ]).then((results) => results.flat());
 
     return completions;

@@ -21,3 +21,13 @@ export type Context = {
   lineNr: number;
   completePos: number;
 };
+
+/// neorg ///
+export type HeadingLevel = 1 | 2 | 3 | 4 | 5 | 6;
+
+export function isHeadingLevel(src: unknown): src is HeadingLevel {
+  if (typeof src !== "number") {
+    return false;
+  }
+  return [...Array(6).keys()].map((i) => i + 1).includes(src);
+}

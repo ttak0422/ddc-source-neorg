@@ -93,4 +93,7 @@
 (fn get-local-footnotes []
   (get-links :footnote 0))
 
-{: get-local-footnotes}
+(fn get-local-headings [level]
+  (get-links (string.format "heading%d" level) 0))
+
+{: get-local-footnotes : get-local-headings}

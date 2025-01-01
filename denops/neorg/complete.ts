@@ -1,13 +1,14 @@
 import { fs, path } from "./deps/std.ts";
 import { UserData } from "./deps/lsp.ts";
 import { types } from "./deps/ddc.ts";
-import { Context } from "./types.ts";
+import { Context, isHeadingLevel } from "./types.ts";
 import {
   getAnchorList,
   getCurrentBuffer,
   getCurrentWorkspace,
   getLanguageList,
   getLocalFootnoteList,
+  getLocalHeadingList,
 } from "./bindings.ts";
 
 type CompletionItem = types.Item<UserData>;
@@ -130,3 +131,23 @@ export const getLocalFootnotes = async (
     return [];
   }
 };
+
+export const getLocalHeadings: (ctx: Context) => Promise<CompletionItem[]> =
+  (() => {
+    const pattern = /{\*+$/;
+    return async (ctx) => {
+      const input = ctx.input.slice(-7);
+      const match = pattern.exec(input);
+      if (!match) {
+        return [];
+      }
+
+      const level = match[0].length - 1;
+      if (!isHeadingLevel(level)) {
+        return [];
+      }
+
+      const links = await getLocalHeadingList(ctx, level);
+      return links.map((l) => ({ word: ` ${l}}`, abbr: l }));
+    };
+  })();

@@ -1,5 +1,5 @@
 import { path } from "./deps/std.ts";
-import { Context, Language, toLanguage } from "./types.ts";
+import { Context, HeadingLevel, Language, toLanguage } from "./types.ts";
 import { issueId } from "./util.ts";
 
 export async function getCurrentBuffer(ctx: Context): Promise<string> {
@@ -68,6 +68,22 @@ export async function getLocalFootnoteList(ctx: Context): Promise<string[]> {
       "luaeval",
       "require('ddc_source_neorg')['get-local-footnote-list'](_A.id)",
       { id },
+    ),
+  ]);
+  return footnotes;
+}
+
+export async function getLocalHeadingList(
+  ctx: Context,
+  level: HeadingLevel,
+): Promise<string[]> {
+  const id = issueId();
+  const [footnotes] = await Promise.all([
+    ctx.callback(id) as Promise<string[]>,
+    ctx.denops.call(
+      "luaeval",
+      "require('ddc_source_neorg')['get-local-heading-list'](_A.id, _A.level)",
+      { level, id },
     ),
   ]);
   return footnotes;

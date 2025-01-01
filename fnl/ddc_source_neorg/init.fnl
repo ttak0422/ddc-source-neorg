@@ -43,8 +43,15 @@
         links (link.get-local-footnotes)]
     (cb id links)))
 
+; get local headings : (id: string, level: 1 | 2 | 3 | 4 | 5 | 6) -> [ id: string, headings: string[] ]
+(fn get-local-heading-list [id level]
+  (let [link (require :ddc_source_neorg.link)
+        links (link.get-local-headings level)]
+    (cb id links)))
+
 {: get-current-buffer
  : get-language-list
  : get-current-workspace
  : get-anchor-list
- : get-local-footnote-list}
+ : get-local-footnote-list
+ : get-local-heading-list}
