@@ -1,4 +1,5 @@
 import {
+  getAnchors,
   getBuiltinElements,
   getDocumentElements,
   getFiles,
@@ -41,6 +42,7 @@ export class Source extends source.BaseSource<Params> {
       getLanguages(ctx),
       getTasks(ctx),
       getFiles(ctx),
+      getAnchors(ctx),
     ]).then((results) => results.flat());
 
     return completions;

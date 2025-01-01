@@ -31,4 +31,13 @@
         path (: (. workspace 2) :tostring)]
     (cb id {: name : path})))
 
-{: get-current-buffer : get-language-list : get-current-workspace}
+; get anchors : (id: string) -> [ id: string, anchors: string[] ]
+(fn get-anchor-list [id]
+  (let [anchor (require :ddc_source_neorg.anchor)
+        anchors (anchor.get-anchors)]
+    (cb id anchors)))
+
+{: get-current-buffer
+ : get-language-list
+ : get-current-workspace
+ : get-anchor-list}

@@ -38,4 +38,9 @@ local function get_current_workspace(id)
   local path = workspace[2]:tostring()
   return cb(id, {name = name, path = path})
 end
-return {["get-current-buffer"] = get_current_buffer, ["get-language-list"] = get_language_list, ["get-current-workspace"] = get_current_workspace}
+local function get_anchor_list(id)
+  local anchor = require("ddc_source_neorg.anchor")
+  local anchors = anchor["get-anchors"]()
+  return cb(id, anchors)
+end
+return {["get-current-buffer"] = get_current_buffer, ["get-language-list"] = get_language_list, ["get-current-workspace"] = get_current_workspace, ["get-anchor-list"] = get_anchor_list}

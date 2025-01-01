@@ -46,3 +46,16 @@ export async function getCurrentWorkspace(ctx: Context): Promise<{
     path: path.toFileUrl(workspace.path),
   };
 }
+
+export async function getAnchorList(ctx: Context): Promise<string[]> {
+  const id = issueId();
+  const [anchors] = await Promise.all([
+    ctx.callback(id) as Promise<string[]>,
+    ctx.denops.call(
+      "luaeval",
+      "require('ddc_source_neorg')['get-anchor-list'](_A.id)",
+      { id },
+    ),
+  ]);
+  return anchors;
+}

@@ -3,6 +3,7 @@ import { UserData } from "./deps/lsp.ts";
 import { types } from "./deps/ddc.ts";
 import { Context } from "./types.ts";
 import {
+  getAnchorList,
   getCurrentBuffer,
   getCurrentWorkspace,
   getLanguageList,
@@ -102,4 +103,15 @@ export const getFiles = async (ctx: Context): Promise<CompletionItem[]> => {
     .map((e) => path.relative(currentDir, e.path));
 
   return relativePaths.map((p) => ({ word: `$/${p}:` }));
+};
+
+export const getAnchors = async (ctx: Context): Promise<CompletionItem[]> => {
+  const suffix = ctx.input.slice(-2);
+  const complete = suffix !== "}[" && suffix.slice(-1) === "[";
+  if (!complete) {
+    return [];
+  }
+  const anchors = await getAnchorList(ctx);
+  console.log(`anchors: ${anchors}`);
+  return anchors.map((a) => ({ word: a }));
 };
