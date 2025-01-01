@@ -16,7 +16,7 @@ local function execute_query(language, query, callback, bufnr)
   if parser then
     do
       local root = parser:parse()[1]:root()
-      for id, node in query0:iter_captures(root, parser.source) do
+      for id, node in query0:iter_captures(root, bufnr) do
         if callback(query0, id, node) then break end
         -- nop
       end

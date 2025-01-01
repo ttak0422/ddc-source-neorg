@@ -14,7 +14,7 @@
     (if parser
         (do
           (let [root (: (. (parser:parse) 1) :root)]
-            (each [id node (query:iter_captures root parser.source)
+            (each [id node (query:iter_captures root bufnr)
                    &until (callback query id node)]
               (lua "-- nop")))
           true)
