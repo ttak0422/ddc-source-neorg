@@ -112,6 +112,5 @@ export const getAnchors = async (ctx: Context): Promise<CompletionItem[]> => {
     return [];
   }
   const anchors = await getAnchorList(ctx);
-  console.log(`anchors: ${anchors}`);
   return anchors.map((a) => ({ word: a }));
 };
