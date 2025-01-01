@@ -151,3 +151,15 @@ export const getLocalHeadings: (ctx: Context) => Promise<CompletionItem[]> =
       return links.map((l) => ({ word: ` ${l}}`, abbr: l }));
     };
   })();
+
+export const getLocalLinks: (ctx: Context) => Promise<CompletionItem[]> =
+  (() => {
+    const pattern = /^.*\{[#$*^]+ ([^}]*)}\[/;
+    return (ctx) => {
+      const match = pattern.exec(ctx.input);
+      if (match) {
+        return Promise.resolve([{ word: match[1] }]);
+      }
+      return Promise.resolve([]);
+    };
+  })();
