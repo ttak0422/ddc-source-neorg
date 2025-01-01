@@ -60,11 +60,11 @@
                 deadnix.enable = true;
                 luacheck = {
                   enable = true;
-                  excludes = [ "lua/ddc_source_neorg/init.lua" ];
+                  excludes = [ "lua/ddc_source_neorg/.*\\.lua" ];
                 };
                 stylua = {
                   enable = true;
-                  excludes = [ "lua/ddc_source_neorg/init.lua" ];
+                  excludes = [ "lua/ddc_source_neorg/.*\\.lua" ];
                 };
                 denofmt.enable = true;
                 denolint.enable = true;
