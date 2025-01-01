@@ -53,10 +53,16 @@ local function get_node_text(node, bufnr)
     return ""
   end
 end
-local function _7_(query, callback, bufnr_3f)
+local function _7_(query)
+  return parse_query("norg", query)
+end
+local function _8_(bufnr_3f)
+  return get_parser("norg", util["normalize-bufnr"](bufnr_3f))
+end
+local function _9_(query, callback, bufnr_3f)
   return execute_query("norg", query, callback, util["normalize-bufnr"](bufnr_3f))
 end
-local function _8_(node, bufnr_3f)
+local function _10_(node, bufnr_3f)
   return get_node_text(node, util["normalize-bufnr"](bufnr_3f))
 end
-return {["execute-neorg-query"] = _7_, ["get-node-text"] = _8_}
+return {["parse-neorg-query"] = _7_, ["get-neorg-parser"] = _8_, ["execute-neorg-query"] = _9_, ["get-node-text"] = _10_}

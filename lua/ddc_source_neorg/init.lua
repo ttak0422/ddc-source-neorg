@@ -43,4 +43,9 @@ local function get_anchor_list(id)
   local anchors = anchor["get-anchors"]()
   return cb(id, anchors)
 end
-return {["get-current-buffer"] = get_current_buffer, ["get-language-list"] = get_language_list, ["get-current-workspace"] = get_current_workspace, ["get-anchor-list"] = get_anchor_list}
+local function get_local_footnote_list(id)
+  local link = require("ddc_source_neorg.link")
+  local links = link["get-local-footnotes"]()
+  return cb(id, links)
+end
+return {["get-current-buffer"] = get_current_buffer, ["get-language-list"] = get_language_list, ["get-current-workspace"] = get_current_workspace, ["get-anchor-list"] = get_anchor_list, ["get-local-footnote-list"] = get_local_footnote_list}

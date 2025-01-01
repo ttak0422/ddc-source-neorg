@@ -36,7 +36,11 @@
                           (table.concat lines "\\n"))))
     _ ""))
 
-{:execute-neorg-query (fn [query callback bufnr?]
+{:parse-neorg-query (fn [query]
+                      (parse-query :norg query))
+ :get-neorg-parser (fn [bufnr?]
+                     (get-parser :norg (util.normalize-bufnr bufnr?)))
+ :execute-neorg-query (fn [query callback bufnr?]
                         (execute-query :norg query callback
                                        (util.normalize-bufnr bufnr?)))
  :get-node-text (fn [node bufnr?]

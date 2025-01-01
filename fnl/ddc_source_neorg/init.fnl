@@ -37,7 +37,14 @@
         anchors (anchor.get-anchors)]
     (cb id anchors)))
 
+; get local footnotes : (id: string) -> [ id: string, footnotes: string[] ]
+(fn get-local-footnote-list [id]
+  (let [link (require :ddc_source_neorg.link)
+        links (link.get-local-footnotes)]
+    (cb id links)))
+
 {: get-current-buffer
  : get-language-list
  : get-current-workspace
- : get-anchor-list}
+ : get-anchor-list
+ : get-local-footnote-list}

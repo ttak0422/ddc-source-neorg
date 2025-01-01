@@ -59,3 +59,16 @@ export async function getAnchorList(ctx: Context): Promise<string[]> {
   ]);
   return anchors;
 }
+
+export async function getLocalFootnoteList(ctx: Context): Promise<string[]> {
+  const id = issueId();
+  const [footnotes] = await Promise.all([
+    ctx.callback(id) as Promise<string[]>,
+    ctx.denops.call(
+      "luaeval",
+      "require('ddc_source_neorg')['get-local-footnote-list'](_A.id)",
+      { id },
+    ),
+  ]);
+  return footnotes;
+}

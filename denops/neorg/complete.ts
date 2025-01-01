@@ -7,6 +7,7 @@ import {
   getCurrentBuffer,
   getCurrentWorkspace,
   getLanguageList,
+  getLocalFootnoteList,
 } from "./bindings.ts";
 
 type CompletionItem = types.Item<UserData>;
@@ -113,4 +114,19 @@ export const getAnchors = async (ctx: Context): Promise<CompletionItem[]> => {
   }
   const anchors = await getAnchorList(ctx);
   return anchors.map((a) => ({ word: a }));
+};
+
+export const getLocalFootnotes = async (
+  ctx: Context,
+): Promise<CompletionItem[]> => {
+  const { input } = ctx;
+  if (input.slice(-2) === "{^") {
+    const links = await getLocalFootnoteList(ctx);
+    return links.map((l) => ({ word: ` ${l}}`, abbr: l }));
+  } else if (input.slice(-3) === "{^ ") {
+    const links = await getLocalFootnoteList(ctx);
+    return links.map((l) => ({ word: `${l}}`, abbr: l }));
+  } else {
+    return [];
+  }
 };
