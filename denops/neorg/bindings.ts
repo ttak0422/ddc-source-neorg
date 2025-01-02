@@ -133,3 +133,19 @@ export async function getForeignHeadingList(
   ]);
   return footnotes;
 }
+
+export async function getForeignGenericList(
+  ctx: Context,
+  path: string,
+): Promise<string[]> {
+  const id = issueId();
+  const [items] = await Promise.all([
+    ctx.callback(id) as Promise<string[]>,
+    ctx.denops.call(
+      "luaeval",
+      "require('ddc_source_neorg')['get-foreign-generic-list'](_A.id, _A.path)",
+      { id, path },
+    ),
+  ]);
+  return items;
+}

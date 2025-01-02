@@ -68,4 +68,9 @@ local function get_foreign_heading_list(id, path, level)
   local links = link["get-foreign-headings"](path, level)
   return cb(id, links)
 end
-return {["get-current-buffer"] = get_current_buffer, ["get-language-list"] = get_language_list, ["get-current-workspace"] = get_current_workspace, ["get-anchor-list"] = get_anchor_list, ["get-local-footnote-list"] = get_local_footnote_list, ["get-local-heading-list"] = get_local_heading_list, ["get-local-generic-list"] = get_local_generic_list, ["get-foreign-footnote-list"] = get_foreign_footnote_list, ["get-foreign-heading-list"] = get_foreign_heading_list}
+local function get_foreign_generic_list(id, path)
+  local link = require("ddc_source_neorg.link")
+  local links = link["get-foreign-generics"](path)
+  return cb(id, links)
+end
+return {["get-current-buffer"] = get_current_buffer, ["get-language-list"] = get_language_list, ["get-current-workspace"] = get_current_workspace, ["get-anchor-list"] = get_anchor_list, ["get-local-footnote-list"] = get_local_footnote_list, ["get-local-heading-list"] = get_local_heading_list, ["get-local-generic-list"] = get_local_generic_list, ["get-foreign-footnote-list"] = get_foreign_footnote_list, ["get-foreign-heading-list"] = get_foreign_heading_list, ["get-foreign-generic-list"] = get_foreign_generic_list}

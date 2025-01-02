@@ -113,8 +113,12 @@
 (fn get-foreign-headings [path level]
   (get-file-links (string.format "heading%d" level) path))
 
+(fn get-foreign-generics [path]
+  (get-file-links :generic path))
+
 {: get-local-footnotes
  : get-local-headings
  : get-local-generics
  : get-foreign-footnotes
- : get-foreign-headings}
+ : get-foreign-headings
+ : get-foreign-generics}
