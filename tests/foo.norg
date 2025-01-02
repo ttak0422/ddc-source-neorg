@@ -2,9 +2,6 @@
   $ definition
   ^ footnote
 
-  {* custom}[custom link]
-
-
 ** foo lv2
    {* foo lv1}
    test
@@ -12,8 +9,7 @@
 *** foo lv3
     {** foo lv2}[lv2]
 
-**** foo lv4
-     {/ test.txt}
+**** foo lv4 {/ test.txt}
 
 ***** foo lv5
       {https://github.com}[GitHub]
@@ -28,6 +24,3 @@
         @image png
         ...
         @end
-
-
-
