@@ -110,7 +110,11 @@
 (fn get-foreign-footnotes [path]
   (get-file-links :footnote path))
 
+(fn get-foreign-headings [path level]
+  (get-file-links (string.format "heading%d" level) path))
+
 {: get-local-footnotes
  : get-local-headings
  : get-local-generics
- : get-foreign-footnotes}
+ : get-foreign-footnotes
+ : get-foreign-headings}

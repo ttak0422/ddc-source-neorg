@@ -60,6 +60,11 @@
         links (link.get-foreign-footnotes path)]
     (cb id links)))
 
+(fn get-foreign-heading-list [id path level]
+  (let [link (require :ddc_source_neorg.link)
+        links (link.get-foreign-headings path level)]
+    (cb id links)))
+
 {: get-current-buffer
  : get-language-list
  : get-current-workspace
@@ -67,4 +72,5 @@
  : get-local-footnote-list
  : get-local-heading-list
  : get-local-generic-list
- : get-foreign-footnote-list}
+ : get-foreign-footnote-list
+ : get-foreign-heading-list}

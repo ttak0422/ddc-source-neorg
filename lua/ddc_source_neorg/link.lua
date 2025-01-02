@@ -88,4 +88,7 @@ end
 local function get_foreign_footnotes(path)
   return get_file_links("footnote", path)
 end
-return {["get-local-footnotes"] = get_local_footnotes, ["get-local-headings"] = get_local_headings, ["get-local-generics"] = get_local_generics, ["get-foreign-footnotes"] = get_foreign_footnotes}
+local function get_foreign_headings(path, level)
+  return get_file_links(string.format("heading%d", level), path)
+end
+return {["get-local-footnotes"] = get_local_footnotes, ["get-local-headings"] = get_local_headings, ["get-local-generics"] = get_local_generics, ["get-foreign-footnotes"] = get_foreign_footnotes, ["get-foreign-headings"] = get_foreign_headings}

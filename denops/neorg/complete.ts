@@ -6,6 +6,7 @@ import {
   getCurrentBuffer,
   getCurrentWorkspace,
   getForeignFootnoteList,
+  getForeignHeadingList,
   getLanguageList,
   getLocalFootnoteList,
   getLocalGenericList,
@@ -223,6 +224,36 @@ export const getForeignFootnotes: (ctx: Context) => Promise<CompletionItem[]> =
       const links = await getForeignFootnoteList(ctx, path);
       return links.map((l) => ({
         word: ` ${l}`,
+        abbr: l,
+        menu: menu.reference,
+      }));
+    };
+  })();
+
+export const getForeignHeadings: (ctx: Context) => Promise<CompletionItem[]> =
+  (() => {
+    const pattern = /.*{:(.*):(\**)/;
+    return async (ctx) => {
+      const input = ctx.input.slice(0, ctx.completePos);
+      const match = pattern.exec(input);
+      if (!match) {
+        return [];
+      }
+
+      const [path, err] = await resolvePath(ctx, match[1]);
+      if (err !== undefined) {
+        console.error(err);
+        return [];
+      }
+
+      const level = match[2].length;
+      if (!isHeadingLevel(level)) {
+        return [];
+      }
+
+      const links = await getForeignHeadingList(ctx, path, level);
+      return links.map((l) => ({
+        word: ` ${l}}`,
         abbr: l,
         menu: menu.reference,
       }));

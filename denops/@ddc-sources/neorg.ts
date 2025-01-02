@@ -4,6 +4,7 @@ import {
   getDocumentElements,
   getFiles,
   getForeignFootnotes,
+  getForeignHeadings,
   getLanguages,
   getLocalFootnotes,
   getLocalGenerics,
@@ -52,6 +53,7 @@ export class Source extends source.BaseSource<Params> {
       getLocalLinks(ctx),
       getLocalGenerics(ctx),
       getForeignFootnotes(ctx),
+      getForeignHeadings(ctx),
     ]).then((results) => results.flat());
 
     return completions;

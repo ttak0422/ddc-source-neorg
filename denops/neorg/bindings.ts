@@ -116,3 +116,20 @@ export async function getForeignFootnoteList(
   ]);
   return footnotes;
 }
+
+export async function getForeignHeadingList(
+  ctx: Context,
+  path: string,
+  level: HeadingLevel,
+): Promise<string[]> {
+  const id = issueId();
+  const [footnotes] = await Promise.all([
+    ctx.callback(id) as Promise<string[]>,
+    ctx.denops.call(
+      "luaeval",
+      "require('ddc_source_neorg')['get-foreign-heading-list'](_A.id, _A.path, _A.level)",
+      { id, path, level },
+    ),
+  ]);
+  return footnotes;
+}
