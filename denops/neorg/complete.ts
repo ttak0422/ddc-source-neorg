@@ -117,10 +117,10 @@ export const getFiles = async (ctx: Context): Promise<CompletionItem[]> => {
     fs.walk(workspace.path, { maxDepth: 20, includeDirs: false }),
   );
   const currentPath = await getCurrentBuffer(ctx);
-  const currentDir = path.dirname(currentPath);
   const relativePaths = entries.filter((e) => e.name.endsWith(".norg"))
     .filter((e) => e.path !== currentPath)
-    .map((e) => path.relative(currentDir, e.path));
+    .map((e) => path.relative(workspace.path, e.path))
+    .map((p) => p.slice(0, -5)); // remove ".norg"
 
   return relativePaths.map((p) => ({ word: `$/${p}:`, menu: menu.file }));
 };
