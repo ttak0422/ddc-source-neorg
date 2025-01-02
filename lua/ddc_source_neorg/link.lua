@@ -1,13 +1,13 @@
 -- [nfnl] Compiled from fnl/ddc_source_neorg/link.fnl by https://github.com/Olical/nfnl, do not edit.
 local util = require("ddc_source_neorg.internal.util")
 local treesitter = require("ddc_source_neorg.internal.treesitter")
-local generic = "[(_ [(strong_carryover_set (strong_carryover name: (tag_name) @tag_name (tag_parameters) @title (#eq? @tag_name \"name\"))) (weak_carryover_set (weak_carryover name: (tag_name) @tag_name (tag_parameters) @title (#eq? @tag_name \"name\")))]? title: (paragraph_segment) @title) (inline_link_target (paragraph) @title)]"
+local generic = "\n[(_\n  [(strong_carryover_set\n     (strong_carryover\n       name: (tag_name) @tag_name\n       (tag_parameters) @title\n       (#eq? @tag_name \"name\")))\n   (weak_carryover_set\n     (weak_carryover\n       name: (tag_name) @tag_name\n       (tag_parameters) @title\n       (#eq? @tag_name \"name\")))]?\n  title: (paragraph_segment) @title)\n  (inline_link_target (paragraph) @title)]"
 local definition, footnote = nil, nil
 do
-  local template = "(REPLACE_list (strong_carryover_set (strong_carryover name: (tag_name) @tag_name (tag_parameters) @title (#eq? @tag_name \"name\")))? . [(single_REPLACE (weak_carryover_set (weak_carryover name: (tag_name) @tag_name (tag_parameters) @title (#eq? @tag_name \"name\")))? (single_REPLACE_prefix) title: (paragraph_segment) @title) (multi_REPLACE (weak_carryover_set (weak_carryover name: (tag_name) @tag_name (tag_parameters) @title (#eq? @tag_name \"name\")))? (multi_REPLACE_prefix) title: (paragraph_segment) @title)])"
+  local template = "\n(REPLACE_list\n  (strong_carryover_set\n    (strong_carryover\n      name: (tag_name) @tag_name\n      (tag_parameters) @title\n      (#eq? @tag_name \"name\")))?\n  .\n  [(single_REPLACE\n     (weak_carryover_set\n       (weak_carryover\n         name: (tag_name) @tag_name\n         (tag_parameters) @title\n         (#eq? @tag_name \"name\")))?\n     (single_REPLACE_prefix)\n     title: (paragraph_segment) @title)\n   (multi_REPLACE\n     (weak_carryover_set\n       (weak_carryover\n         name: (tag_name) @tag_name\n         (tag_parameters) @title\n         (#eq? @tag_name \"name\")))?\n     (multi_REPLACE_prefix)\n     title: (paragraph_segment) @title)])"
   definition, footnote = string.gsub(template, "REPLACE", "definition"), string.gsub(template, "REPLACE", "footnote")
 end
-local other_template = "(%s [(strong_carryover_set (strong_carryover name: (tag_name) @tag_name (tag_parameters) @title (#eq? @tag_name \"name\"))) (weak_carryover_set (weak_carryover name: (tag_name) @tag_name (tag_parameters) @title (#eq? @tag_name \"name\")))]? (%s_prefix) title: (paragraph_segment) @title)"
+local other_template = "\n(%s\n  [(strong_carryover_set\n     (strong_carryover\n       name: (tag_name) @tag_name\n       (tag_parameters) @title\n       (#eq? @tag_name \"name\")))\n   (weak_carryover_set\n     (weak_carryover\n       name: (tag_name) @tag_name\n       (tag_parameters) @title\n       (#eq? @tag_name \"name\")))]?\n  (%s_prefix)\n  title: (paragraph_segment) @title)"
 local function get_query(link_type)
   if (link_type == "generic") then
     return generic
@@ -22,18 +22,15 @@ local function get_query(link_type)
     return nil
   end
 end
-local function get_links(link_type, bufnr_3f)
-  local bufnr = util["normalize-bufnr"](bufnr_3f)
-  local query_string = get_query(link_type)
-  local parser = treesitter["get-neorg-parser"](bufnr)
-  if (nil ~= parser) then
-    local parser0 = parser
+local function get_links(parser_3f, query_string, src)
+  if (nil ~= parser_3f) then
+    local parser = parser_3f
     local links = {}
     local query = treesitter["parse-neorg-query"](query_string)
-    local tree = parser0:parse()[1]
-    for id, node in query:iter_captures(tree:root(), bufnr, 0, -1) do
+    local tree = parser:parse()[1]
+    for id, node in query:iter_captures(tree:root(), src, 0, -1) do
       if (query.captures[id] == "title") then
-        local tmp_3_auto = treesitter["get-node-text"](node, bufnr)
+        local tmp_3_auto = treesitter["get-node-text"](node, src)
         if (nil ~= tmp_3_auto) then
           local tmp_3_auto0 = string.gsub(tmp_3_auto, "\\", "")
           if (nil ~= tmp_3_auto0) then
@@ -58,17 +55,37 @@ local function get_links(link_type, bufnr_3f)
     end
     return links
   else
-    local _ = parser
+    local _ = parser_3f
     return {}
   end
 end
+local function get_bufnr_links(link_type, bufnr_3f)
+  local bufnr = util["normalize-bufnr"](bufnr_3f)
+  local parser = treesitter["get-neorg-bufnr-parser"](bufnr)
+  return get_links(parser, get_query(link_type), bufnr)
+end
+local function get_file_links(link_type, file)
+  if (vim.fn.bufnr(file) ~= -1) then
+    local function _9_(bufnr)
+      return get_bufnr_links(link_type, bufnr)
+    end
+    return _9_(vim.uri_to_bufnr(vim.uri_from_fname(file)))
+  else
+    local file0 = io.open(file, "r"):read("*a")
+    local parser = treesitter["get-neorg-file-parser"](file0)
+    return get_links(parser, get_query(link_type), file0)
+  end
+end
 local function get_local_footnotes()
-  return get_links("footnote", 0)
+  return get_bufnr_links("footnote", 0)
 end
 local function get_local_headings(level)
-  return get_links(string.format("heading%d", level), 0)
+  return get_bufnr_links(string.format("heading%d", level), 0)
 end
 local function get_local_generics()
-  return get_links("generic", 0)
+  return get_bufnr_links("generic", 0)
 end
-return {["get-local-footnotes"] = get_local_footnotes, ["get-local-headings"] = get_local_headings, ["get-local-generics"] = get_local_generics}
+local function get_foreign_footnotes(path)
+  return get_file_links("footnote", path)
+end
+return {["get-local-footnotes"] = get_local_footnotes, ["get-local-headings"] = get_local_headings, ["get-local-generics"] = get_local_generics, ["get-foreign-footnotes"] = get_foreign_footnotes}

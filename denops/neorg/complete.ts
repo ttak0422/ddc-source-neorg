@@ -5,11 +5,13 @@ import {
   getAnchorList,
   getCurrentBuffer,
   getCurrentWorkspace,
+  getForeignFootnoteList,
   getLanguageList,
   getLocalFootnoteList,
   getLocalGenericList,
   getLocalHeadingList,
 } from "./bindings.ts";
+import { resolvePath } from "./neorg.ts";
 
 type CompletionItem = types.Item;
 
@@ -201,3 +203,28 @@ export const getLocalGenerics = async (
   const links = await getLocalGenericList(ctx);
   return links.map((l) => ({ word: ` ${l}}`, abbr: l, menu: menu.reference }));
 };
+
+export const getForeignFootnotes: (ctx: Context) => Promise<CompletionItem[]> =
+  (() => {
+    const pattern = /.*{:(.*):\^/;
+    return async (ctx) => {
+      const input = ctx.input.slice(0, ctx.completePos);
+      const match = pattern.exec(input);
+      if (!match) {
+        return [];
+      }
+
+      const [path, err] = await resolvePath(ctx, match[1]);
+      if (err !== undefined) {
+        console.error(err);
+        return [];
+      }
+
+      const links = await getForeignFootnoteList(ctx, path);
+      return links.map((l) => ({
+        word: ` ${l}`,
+        abbr: l,
+        menu: menu.reference,
+      }));
+    };
+  })();

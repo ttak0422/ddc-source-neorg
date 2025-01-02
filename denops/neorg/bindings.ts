@@ -100,3 +100,19 @@ export async function getLocalGenericList(ctx: Context): Promise<string[]> {
   ]);
   return links;
 }
+
+export async function getForeignFootnoteList(
+  ctx: Context,
+  path: string,
+): Promise<string[]> {
+  const id = issueId();
+  const [footnotes] = await Promise.all([
+    ctx.callback(id) as Promise<string[]>,
+    ctx.denops.call(
+      "luaeval",
+      "require('ddc_source_neorg')['get-foreign-footnote-list'](_A.id, _A.path)",
+      { id, path },
+    ),
+  ]);
+  return footnotes;
+}

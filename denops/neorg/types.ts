@@ -31,3 +31,6 @@ export function isHeadingLevel(src: unknown): src is HeadingLevel {
   }
   return [...Array(6).keys()].map((i) => i + 1).includes(src);
 }
+
+/// util ///
+export type Result<T, E = Error> = [T, undefined] | [undefined, E];

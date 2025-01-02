@@ -5,12 +5,15 @@
       (vim.treesitter.query.parse language query)
       (vim.treesitter.parse_query language query)))
 
-(fn get-parser [language bufnr]
+(fn get-bufnr-parser [language bufnr]
   (vim.treesitter.get_parser bufnr language))
+
+(fn get-file-parser [language file]
+  (vim.treesitter.get_string_parser file language))
 
 (fn execute-query [language query callback bufnr]
   (let [query (parse-query language query)
-        parser (get-parser language bufnr)]
+        parser (get-bufnr-parser language bufnr)]
     (if parser
         (do
           (let [root (: (. (parser:parse) 1) :root)]
@@ -20,7 +23,7 @@
           true)
         false)))
 
-(fn get-node-text [node bufnr]
+(fn get-bufnr-node-text [node bufnr]
   (case [node bufnr]
     [node source] (let [(start-row start-col) (node:start)
                         eof-row (vim.api.nvim_buf_line_count source)
@@ -36,10 +39,23 @@
                           (table.concat lines "\\n"))))
     _ ""))
 
+(fn get-file-node-text [node path]
+  (let [(_ _ start_bytes) (node:start)
+        (_ _ end_bytes) (node:end_)]
+    (string.sub path (+ start_bytes 1) end_bytes)))
+
+(fn get-node-text [node src]
+  (case (type src)
+    :string (get-file-node-text node src)
+    bufnr (get-bufnr-node-text node bufnr)))
+
 {:parse-neorg-query (fn [query]
                       (parse-query :norg query))
- :get-neorg-parser (fn [bufnr?]
-                     (get-parser :norg (util.normalize-bufnr bufnr?)))
+ :get-neorg-bufnr-parser (fn [bufnr?]
+                           (get-bufnr-parser :norg
+                                             (util.normalize-bufnr bufnr?)))
+ :get-neorg-file-parser (fn [file]
+                          (get-file-parser :norg file))
  :execute-neorg-query (fn [query callback bufnr?]
                         (execute-query :norg query callback
                                        (util.normalize-bufnr bufnr?)))
