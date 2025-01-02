@@ -49,9 +49,16 @@
         links (link.get-local-headings level)]
     (cb id links)))
 
+; get local generic links : (id: string) -> [ id: string, links: string[] ]
+(fn get-local-generic-list [id]
+  (let [link (require :ddc_source_neorg.link)
+        links (link.get-local-generics)]
+    (cb id links)))
+
 {: get-current-buffer
  : get-language-list
  : get-current-workspace
  : get-anchor-list
  : get-local-footnote-list
- : get-local-heading-list}
+ : get-local-heading-list
+ : get-local-generic-list}

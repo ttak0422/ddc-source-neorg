@@ -5,6 +5,7 @@ import {
   getFiles,
   getLanguages,
   getLocalFootnotes,
+  getLocalGenerics,
   getLocalHeadings,
   getLocalLinks,
   getMediaTypes,
@@ -49,6 +50,7 @@ export class Source extends source.BaseSource<Params> {
       getLocalFootnotes(ctx),
       getLocalHeadings(ctx),
       getLocalLinks(ctx),
+      getLocalGenerics(ctx),
     ]).then((results) => results.flat());
 
     return completions;

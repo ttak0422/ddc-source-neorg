@@ -8,6 +8,7 @@ import {
   getCurrentWorkspace,
   getLanguageList,
   getLocalFootnoteList,
+  getLocalGenericList,
   getLocalHeadingList,
 } from "./bindings.ts";
 
@@ -163,3 +164,16 @@ export const getLocalLinks: (ctx: Context) => Promise<CompletionItem[]> =
       return Promise.resolve([]);
     };
   })();
+
+export const getLocalGenerics = async (
+  ctx: Context,
+): Promise<CompletionItem[]> => {
+  const { input } = ctx;
+  const complete = input.slice(-2) === "{#";
+  if (!complete) {
+    return [];
+  }
+  console.log("aaaaaaaaaaaaaa");
+  const links = await getLocalGenericList(ctx);
+  return links.map((l) => ({ word: ` ${l}}`, abbr: l }));
+};

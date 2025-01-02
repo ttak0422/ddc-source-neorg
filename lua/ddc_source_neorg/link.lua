@@ -68,4 +68,7 @@ end
 local function get_local_headings(level)
   return get_links(string.format("heading%d", level), 0)
 end
-return {["get-local-footnotes"] = get_local_footnotes, ["get-local-headings"] = get_local_headings}
+local function get_local_generics()
+  return get_links("generic", 0)
+end
+return {["get-local-footnotes"] = get_local_footnotes, ["get-local-headings"] = get_local_headings, ["get-local-generics"] = get_local_generics}

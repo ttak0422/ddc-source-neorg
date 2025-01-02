@@ -88,3 +88,16 @@ export async function getLocalHeadingList(
   ]);
   return footnotes;
 }
+
+export async function getLocalGenericList(ctx: Context): Promise<string[]> {
+  const id = issueId();
+  const [links] = await Promise.all([
+    ctx.callback(id) as Promise<string[]>,
+    ctx.denops.call(
+      "luaeval",
+      "require('ddc_source_neorg')['get-local-generic-list'](_A.id)",
+      { id },
+    ),
+  ]);
+  return links;
+}
