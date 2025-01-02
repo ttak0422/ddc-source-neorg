@@ -1,12 +1,13 @@
 * bar
-  {:$/foo:}
-  {:$/foo:* foo lv1}
-  {:$/foo:** foo lv2}
-  {:$/foo:*** foo lv3}
-  {:$/foo:**** foo lv4}
-  {:$/foo:***** foo lv5}
-  {:$/foo:****** foo lv6}
-  {:$/foo:****** foo lv7}
-  {:$/foo:$ definition}
-  {:$/foo:^ footnote}
-  {:$/foo:# footnote}
+  {:$/tests/foo:}
+  {:$/tests/foo:* foo lv1}
+  {:$/tests/foo:** foo lv2}
+  {:$/tests/foo:*** foo lv3}
+  {:$/tests/foo:**** foo lv4}
+  {:$/tests/foo:***** foo lv5}
+  {:$/tests/foo:****** foo lv6}
+  {:$/tests/foo:****** foo lv7}
+  {:$/tests/foo:$ definition}
+  {:$/tests/foo:^ footnote}
+  {:$/tests/foo:# footnote}
+  {:$/tests/foo:*** foolv3}

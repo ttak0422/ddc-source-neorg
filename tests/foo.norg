@@ -1,6 +1,7 @@
 * foo lv1
   $ definition
   ^ footnote
+  content
 
 ** foo lv2
    {* foo lv1}
