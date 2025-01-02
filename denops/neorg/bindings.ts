@@ -1,4 +1,3 @@
-import { path } from "./deps/std.ts";
 import { Context, HeadingLevel, Language, toLanguage } from "./types.ts";
 import { issueId } from "./util.ts";
 
@@ -30,7 +29,7 @@ export async function getLanguageList(ctx: Context): Promise<Language[]> {
 
 export async function getCurrentWorkspace(ctx: Context): Promise<{
   name: string;
-  path: URL;
+  path: string;
 }> {
   const id = issueId();
   const [workspace] = await Promise.all([
@@ -43,7 +42,7 @@ export async function getCurrentWorkspace(ctx: Context): Promise<{
   ]);
   return {
     name: workspace.name,
-    path: path.toFileUrl(workspace.path),
+    path: workspace.path,
   };
 }
 
