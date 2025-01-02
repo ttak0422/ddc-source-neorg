@@ -13,7 +13,6 @@ import {
 } from "../neorg/complete.ts";
 import { source, types } from "../neorg/deps/ddc.ts";
 import { Context } from "../neorg/types.ts";
-import { UserData } from "./../neorg/deps/lsp.ts";
 
 export type Params = {
   [K in PropertyKey]: never;
@@ -29,7 +28,7 @@ export class Source extends source.BaseSource<Params> {
     { denops, context, completePos, onCallback }: source.GatherArguments<
       Params
     >,
-  ): Promise<types.DdcGatherItems<UserData>> {
+  ): Promise<types.DdcGatherItems> {
     const ctx: Context = {
       denops,
       input: context.input,

@@ -1,5 +1,4 @@
 import { fs, path } from "./deps/std.ts";
-import { UserData } from "./deps/lsp.ts";
 import { types } from "./deps/ddc.ts";
 import { Context, isHeadingLevel } from "./types.ts";
 import {
@@ -12,11 +11,21 @@ import {
   getLocalHeadingList,
 } from "./bindings.ts";
 
-type CompletionItem = types.Item<UserData>;
+type CompletionItem = types.Item;
+
+const menu = {
+  reference: "Reference",
+  file: "File",
+  tag: "Tag",
+  language: "Language",
+  format: "Format",
+  todo: "Todo",
+} as const;
 
 const makeSimpleStaticCompletion: (opt: {
   pattern: RegExp;
   candinates: string[] | CompletionItem[];
+  menu: typeof menu[keyof typeof menu];
 }) => (ctx: Context) => Promise<CompletionItem[]> = (opt) =>
   (() => {
     return (ctx) => {
@@ -25,9 +34,13 @@ const makeSimpleStaticCompletion: (opt: {
       }
       if (typeof opt.candinates[0] === "string") {
         const cs = opt.candinates as string[];
-        return Promise.resolve(cs.map((c) => ({ word: c })));
+        return Promise.resolve(cs.map((c) => ({ word: c, menu: opt.menu })));
       } else {
-        return Promise.resolve(opt.candinates as CompletionItem[]);
+        const cs = (opt.candinates as CompletionItem[]).map((c) => ({
+          ...c,
+          menu: opt.menu,
+        }));
+        return Promise.resolve(cs);
       }
     };
   })();
@@ -40,12 +53,14 @@ export const getBuiltinElements: (ctx: Context) => Promise<CompletionItem[]> =
       "image",
       "document",
     ],
+    menu: menu.tag,
   });
 
 export const getDocumentElements: (ctx: Context) => Promise<CompletionItem[]> =
   makeSimpleStaticCompletion({
     pattern: /^\s*@document.$/,
     candinates: ["meta"],
+    menu: menu.tag,
   });
 
 export const getMediaTypes: (ctx: Context) => Promise<CompletionItem[]> =
@@ -58,6 +73,7 @@ export const getMediaTypes: (ctx: Context) => Promise<CompletionItem[]> =
       "jfif",
       "exif",
     ],
+    menu: menu.format,
   });
 
 export const getTasks: (ctx: Context) => Promise<CompletionItem[]> =
@@ -65,15 +81,16 @@ export const getTasks: (ctx: Context) => Promise<CompletionItem[]> =
     pattern: /^\s*[-*$~^]\s\(/,
     // lighweight impl
     candinates: [
-      { word: " ) ", abbr: "( )", menu: "undone" },
-      { word: "-) ", abbr: "(-)", menu: "pending" },
-      { word: "x) ", abbr: "(x)", menu: "done" },
-      { word: "_) ", abbr: "(_)", menu: "cancelled" },
-      { word: "!) ", abbr: "(!)", menu: "important" },
-      { word: "+) ", abbr: "(+)", menu: "recurring" },
-      { word: "=) ", abbr: "(=)", menu: "on hold" },
-      { word: "?) ", abbr: "(?)", menu: "uncertain" },
+      { word: " ) ", abbr: "( ) undone" },
+      { word: "-) ", abbr: "(-) pending" },
+      { word: "x) ", abbr: "(x) done" },
+      { word: "_) ", abbr: "(_) cancelled" },
+      { word: "!) ", abbr: "(!) important" },
+      { word: "+) ", abbr: "(+) recurring" },
+      { word: "=) ", abbr: "(=) on hold" },
+      { word: "?) ", abbr: "(?) uncertain" },
     ],
+    menu: menu.todo,
   });
 
 // get languages if available.
@@ -85,7 +102,7 @@ export const getLanguages: (ctx: Context) => Promise<CompletionItem[]> =
         return [];
       }
       const candinates = await getLanguageList(ctx);
-      return candinates.map((c) => ({ word: c }));
+      return candinates.map((c) => ({ word: c, menu: menu.language }));
     };
   })();
 
@@ -105,7 +122,7 @@ export const getFiles = async (ctx: Context): Promise<CompletionItem[]> => {
     .filter((e) => e.path !== currentPath)
     .map((e) => path.relative(currentDir, e.path));
 
-  return relativePaths.map((p) => ({ word: `$/${p}:` }));
+  return relativePaths.map((p) => ({ word: `$/${p}:`, menu: menu.file }));
 };
 
 export const getAnchors = async (ctx: Context): Promise<CompletionItem[]> => {
@@ -115,7 +132,7 @@ export const getAnchors = async (ctx: Context): Promise<CompletionItem[]> => {
     return [];
   }
   const anchors = await getAnchorList(ctx);
-  return anchors.map((a) => ({ word: a }));
+  return anchors.map((a) => ({ word: a, menu: menu.reference }));
 };
 
 export const getLocalFootnotes = async (
@@ -124,10 +141,14 @@ export const getLocalFootnotes = async (
   const { input } = ctx;
   if (input.slice(-2) === "{^") {
     const links = await getLocalFootnoteList(ctx);
-    return links.map((l) => ({ word: ` ${l}}`, abbr: l }));
+    return links.map((l) => ({
+      word: ` ${l}}`,
+      abbr: l,
+      menu: menu.reference,
+    }));
   } else if (input.slice(-3) === "{^ ") {
     const links = await getLocalFootnoteList(ctx);
-    return links.map((l) => ({ word: `${l}}`, abbr: l }));
+    return links.map((l) => ({ word: `${l}}`, abbr: l, menu: menu.reference }));
   } else {
     return [];
   }
@@ -149,7 +170,11 @@ export const getLocalHeadings: (ctx: Context) => Promise<CompletionItem[]> =
       }
 
       const links = await getLocalHeadingList(ctx, level);
-      return links.map((l) => ({ word: ` ${l}}`, abbr: l }));
+      return links.map((l) => ({
+        word: ` ${l}}`,
+        abbr: l,
+        menu: menu.reference,
+      }));
     };
   })();
 
@@ -159,7 +184,7 @@ export const getLocalLinks: (ctx: Context) => Promise<CompletionItem[]> =
     return (ctx) => {
       const match = pattern.exec(ctx.input);
       if (match) {
-        return Promise.resolve([{ word: match[1] }]);
+        return Promise.resolve([{ word: match[1], menu: menu.reference }]);
       }
       return Promise.resolve([]);
     };
@@ -173,7 +198,6 @@ export const getLocalGenerics = async (
   if (!complete) {
     return [];
   }
-  console.log("aaaaaaaaaaaaaa");
   const links = await getLocalGenericList(ctx);
-  return links.map((l) => ({ word: ` ${l}}`, abbr: l }));
+  return links.map((l) => ({ word: ` ${l}}`, abbr: l, menu: menu.reference }));
 };
