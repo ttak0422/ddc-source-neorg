@@ -65,11 +65,11 @@ local function get_node_text(node, src)
   local _7_ = type(src)
   if (_7_ == "string") then
     return get_file_node_text(node, src)
-  elseif (nil ~= _7_) then
-    local bufnr = _7_
-    return get_bufnr_node_text(node, bufnr)
+  elseif (_7_ == "number") then
+    return get_bufnr_node_text(node, src)
   else
-    return nil
+    local _ = _7_
+    return ""
   end
 end
 local function _9_(query)

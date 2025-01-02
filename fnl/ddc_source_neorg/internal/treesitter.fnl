@@ -47,7 +47,8 @@
 (fn get-node-text [node src]
   (case (type src)
     :string (get-file-node-text node src)
-    bufnr (get-bufnr-node-text node bufnr)))
+    :number (get-bufnr-node-text node src)
+    _ ""))
 
 {:parse-neorg-query (fn [query]
                       (parse-query :norg query))
