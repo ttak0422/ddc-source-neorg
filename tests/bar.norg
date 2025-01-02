@@ -1,1 +1,12 @@
 * bar
+  {:$/foo:}
+  {:$/foo:* foo lv1}
+  {:$/foo:** foo lv2}
+  {:$/foo:*** foo lv3}
+  {:$/foo:**** foo lv4}
+  {:$/foo:***** foo lv5}
+  {:$/foo:****** foo lv6}
+  {:$/foo:****** foo lv7}
+  {:$/foo:$ definition}
+  {:$/foo:^ footnote}
+  {:$/foo:# footnote}

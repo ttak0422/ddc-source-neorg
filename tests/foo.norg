@@ -1,2 +1,33 @@
-* foo
-  - {:$/nests/baz:}
+* foo lv1
+  $ definition
+  ^ footnote
+
+  {* custom}[custom link]
+
+
+** foo lv2
+   {* foo lv1}
+   test
+
+*** foo lv3
+    {** foo lv2}[lv2]
+
+**** foo lv4
+     {/ test.txt}
+
+***** foo lv5
+      {https://github.com}[GitHub]
+      {https://nixos.org}
+
+****** foo lv6
+       @code python
+       print('Hello World')
+       @end
+
+******* foo lv7
+        @image png
+        ...
+        @end
+
+
+
