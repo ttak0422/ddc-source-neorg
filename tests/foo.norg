@@ -10,7 +10,8 @@
 *** foo lv3
     {** foo lv2}[lv2]
 
-**** foo lv4 {/ test.txt}
+**** foo lv4
+     {/ test.txt}
 
 ***** foo lv5
       {https://github.com}[GitHub]
