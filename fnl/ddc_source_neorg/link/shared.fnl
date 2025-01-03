@@ -1,5 +1,5 @@
 (local util (require :ddc_source_neorg.internal.util))
-(local treesitter (require :ddc_source_neorg.internal.treesitter))
+(local ts (require :ddc_source_neorg.internal.treesitter))
 
 (local generic "
 [(_
@@ -44,7 +44,7 @@
          (values (string.gsub template :REPLACE :definition)
                  (string.gsub template :REPLACE :footnote))))
 
-(local other-template "
+(local other_template "
 (%s
   [(strong_carryover_set
      (strong_carryover
@@ -59,21 +59,21 @@
   (%s_prefix)
   title: (paragraph_segment) @title)")
 
-(fn get-query [link-type]
-  (case link-type
+(fn get_query [link_type]
+  (case link_type
     :generic generic
     :definition definition
     :footnote footnote
-    other (string.format other-template other other)))
+    other (string.format other_template other other)))
 
-(fn get-links [parser? query-string src]
+(fn parse_links [parser? query_string src]
   (case parser?
     parser (let [links []
-                 query (treesitter.parse-neorg-query query-string)
+                 query (ts.norg.parse_query query_string)
                  tree (. (parser:parse) 1)]
              (each [id node (query:iter_captures (tree:root) src 0 -1)]
                (if (= (. query.captures id) :title)
-                   (-?> (treesitter.get-node-text node src)
+                   (-?> (ts.get_node_text node src)
                         (string.gsub "\\" "")
                         (string.gsub "%s+" "")
                         (string.gsub "^%s" "")
@@ -82,43 +82,26 @@
              links)
     _ []))
 
-(fn get-bufnr-links [link-type bufnr?]
-  (let [bufnr (util.normalize-bufnr bufnr?)
-        parser (treesitter.get-neorg-bufnr-parser bufnr)]
-    (get-links parser (get-query link-type) bufnr)))
+(fn get_bufnr_links [link_type bufnr]
+  (let [parser (ts.norg.get_parser bufnr)]
+    (parse_links parser (get_query link_type) bufnr)))
 
-(fn get-file-links [link-type file]
+(fn get_file_links [link_type file]
   (if (not= (vim.fn.bufnr file) -1)
       (-> file
           (vim.uri_from_fname)
           (vim.uri_to_bufnr)
-          ((fn [bufnr] (get-bufnr-links link-type bufnr))))
+          ((fn [bufnr] (get_bufnr_links link_type bufnr))))
       (let [file (-> (io.open file :r)
                      (: :read :*a))
-            parser (treesitter.get-neorg-file-parser file)]
-        (get-links parser (get-query link-type) file))))
+            parser (ts.norg.get_parser file)]
+        (parse_links parser (get_query link_type) file))))
 
-(fn get-local-footnotes []
-  (get-bufnr-links :footnote 0))
+; (link_type: string, source: string | number?) -> string[]
+(fn get_links [link_type source]
+  (case (type source)
+    :string (get_file_links link_type source)
+    :number (get_bufnr_links link_type (util.normalize_bufnr source))
+    _ []))
 
-(fn get-local-headings [level]
-  (get-bufnr-links (string.format "heading%d" level) 0))
-
-(fn get-local-generics []
-  (get-bufnr-links :generic 0))
-
-(fn get-foreign-footnotes [path]
-  (get-file-links :footnote path))
-
-(fn get-foreign-headings [path level]
-  (get-file-links (string.format "heading%d" level) path))
-
-(fn get-foreign-generics [path]
-  (get-file-links :generic path))
-
-{: get-local-footnotes
- : get-local-headings
- : get-local-generics
- : get-foreign-footnotes
- : get-foreign-headings
- : get-foreign-generics}
+{: get_links}

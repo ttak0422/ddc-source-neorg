@@ -7,4 +7,4 @@ local function normalize_bufnr(bufnr_3f)
     return bufnr
   end
 end
-return {["normalize-bufnr"] = normalize_bufnr}
+return {normalize_bufnr = normalize_bufnr}

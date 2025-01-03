@@ -7,24 +7,11 @@ export async function getCurrentBuffer(ctx: Context): Promise<string> {
     ctx.callback(id) as Promise<string>,
     ctx.denops.call(
       "luaeval",
-      "require('ddc_source_neorg')['get-current-buffer'](_A.id)",
+      "require('ddc_source_neorg').current_buffer(_A.id)",
       { id },
     ),
   ]);
   return path;
-}
-
-export async function getLanguageList(ctx: Context): Promise<Language[]> {
-  const id = issueId();
-  const [{ languages }] = await Promise.all([
-    ctx.callback(id) as Promise<{ languages: string[] }>,
-    ctx.denops.call(
-      "luaeval",
-      "require('ddc_source_neorg')['get-language-list'](_A.id)",
-      { id },
-    ),
-  ]);
-  return languages.map(toLanguage);
 }
 
 export async function getCurrentWorkspace(ctx: Context): Promise<{
@@ -36,7 +23,7 @@ export async function getCurrentWorkspace(ctx: Context): Promise<{
     ctx.callback(id) as Promise<{ name: string; path: string }>,
     ctx.denops.call(
       "luaeval",
-      "require('ddc_source_neorg')['get-current-workspace'](_A.id)",
+      "require('ddc_source_neorg').current_workspace(_A.id)",
       { id },
     ),
   ]);
@@ -46,30 +33,30 @@ export async function getCurrentWorkspace(ctx: Context): Promise<{
   };
 }
 
+export async function getLanguageList(ctx: Context): Promise<Language[]> {
+  const id = issueId();
+  const [languages] = await Promise.all([
+    ctx.callback(id) as Promise<string[]>,
+    ctx.denops.call(
+      "luaeval",
+      "require('ddc_source_neorg').language_list(_A.id)",
+      { id },
+    ),
+  ]);
+  return languages.map(toLanguage);
+}
+
 export async function getAnchorList(ctx: Context): Promise<string[]> {
   const id = issueId();
   const [anchors] = await Promise.all([
     ctx.callback(id) as Promise<string[]>,
     ctx.denops.call(
       "luaeval",
-      "require('ddc_source_neorg')['get-anchor-list'](_A.id)",
+      "require('ddc_source_neorg').anchor_list(_A.id)",
       { id },
     ),
   ]);
   return anchors;
-}
-
-export async function getLocalFootnoteList(ctx: Context): Promise<string[]> {
-  const id = issueId();
-  const [footnotes] = await Promise.all([
-    ctx.callback(id) as Promise<string[]>,
-    ctx.denops.call(
-      "luaeval",
-      "require('ddc_source_neorg')['get-local-footnote-list'](_A.id)",
-      { id },
-    ),
-  ]);
-  return footnotes;
 }
 
 export async function getLocalHeadingList(
@@ -81,8 +68,21 @@ export async function getLocalHeadingList(
     ctx.callback(id) as Promise<string[]>,
     ctx.denops.call(
       "luaeval",
-      "require('ddc_source_neorg')['get-local-heading-list'](_A.id, _A.level)",
-      { level, id },
+      "require('ddc_source_neorg').local.heading_list(_A.id, _A.level)",
+      { id, level },
+    ),
+  ]);
+  return footnotes;
+}
+
+export async function getLocalFootnoteList(ctx: Context): Promise<string[]> {
+  const id = issueId();
+  const [footnotes] = await Promise.all([
+    ctx.callback(id) as Promise<string[]>,
+    ctx.denops.call(
+      "luaeval",
+      "require('ddc_source_neorg').local.footnote_list(_A.id)",
+      { id },
     ),
   ]);
   return footnotes;
@@ -94,11 +94,27 @@ export async function getLocalGenericList(ctx: Context): Promise<string[]> {
     ctx.callback(id) as Promise<string[]>,
     ctx.denops.call(
       "luaeval",
-      "require('ddc_source_neorg')['get-local-generic-list'](_A.id)",
+      "require('ddc_source_neorg').local.generic_list(_A.id)",
       { id },
     ),
   ]);
   return links;
+}
+export async function getForeignHeadingList(
+  ctx: Context,
+  path: string,
+  level: HeadingLevel,
+): Promise<string[]> {
+  const id = issueId();
+  const [footnotes] = await Promise.all([
+    ctx.callback(id) as Promise<string[]>,
+    ctx.denops.call(
+      "luaeval",
+      "require('ddc_source_neorg').foreign.heading_list(_A.id, _A.path, _A.level)",
+      { id, path, level },
+    ),
+  ]);
+  return footnotes;
 }
 
 export async function getForeignFootnoteList(
@@ -110,25 +126,8 @@ export async function getForeignFootnoteList(
     ctx.callback(id) as Promise<string[]>,
     ctx.denops.call(
       "luaeval",
-      "require('ddc_source_neorg')['get-foreign-footnote-list'](_A.id, _A.path)",
+      "require('ddc_source_neorg').foreign.footnote_list(_A.id, _A.path)",
       { id, path },
-    ),
-  ]);
-  return footnotes;
-}
-
-export async function getForeignHeadingList(
-  ctx: Context,
-  path: string,
-  level: HeadingLevel,
-): Promise<string[]> {
-  const id = issueId();
-  const [footnotes] = await Promise.all([
-    ctx.callback(id) as Promise<string[]>,
-    ctx.denops.call(
-      "luaeval",
-      "require('ddc_source_neorg')['get-foreign-heading-list'](_A.id, _A.path, _A.level)",
-      { id, path, level },
     ),
   ]);
   return footnotes;
@@ -143,7 +142,7 @@ export async function getForeignGenericList(
     ctx.callback(id) as Promise<string[]>,
     ctx.denops.call(
       "luaeval",
-      "require('ddc_source_neorg')['get-foreign-generic-list'](_A.id, _A.path)",
+      "require('ddc_source_neorg').foreign.generic_list(_A.id, _A.path)",
       { id, path },
     ),
   ]);

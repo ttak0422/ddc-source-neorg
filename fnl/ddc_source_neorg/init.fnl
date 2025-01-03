@@ -1,29 +1,20 @@
 (fn cb [id value]
   (vim.api.nvim_call_function "ddc#callback" [id value]))
 
-(fn get-runtime-files [path]
+(fn get_runtime_files [path]
   (icollect [_ name (pairs (vim.api.nvim_get_runtime_file path true))]
     (vim.fn.fnamemodify name ":t:r")))
 
 ;;; bindings ;;;
+(local anchor (require :ddc_source_neorg.anchor))
+(local link (require :ddc_source_neorg.link))
 
 ; get current buffer : (id: string) => [ id: string, path: string ]
-(fn get-current-buffer [id]
+(fn current_buffer [id]
   (cb id (vim.api.nvim_buf_get_name 0)))
 
-; get languages : (id: string) => [ id: string, { languages: string[] } ]
-(fn get-language-list [id]
-  (let [syntax (get-runtime-files :syntax/*.vim)
-        after-syntax (get-runtime-files :after/syntax/*.vim)
-        parser (get-runtime-files :parser/*.so)
-        files []]
-    (each [_ fs (ipairs [syntax after-syntax parser])]
-      (each [_ f (ipairs fs)]
-        (table.insert files f)))
-    (cb id {:languages files})))
-
 ; get current workspace : (id: string) → [ id: string, { name: string, path: string } ]
-(fn get-current-workspace [id]
+(fn current_workspace [id]
   (let [neorg (require :neorg)
         dirman (neorg.modules.get_module :core.dirman)
         workspace (dirman.get_current_workspace)
@@ -31,52 +22,50 @@
         path (: (. workspace 2) :tostring)]
     (cb id {: name : path})))
 
+; get languages : (id: string) => [ id: string, languages: string[] ]
+(fn language_list [id]
+  (let [syntax (get_runtime_files :syntax/*.vim)
+        after-syntax (get_runtime_files :after/syntax/*.vim)
+        parser (get_runtime_files :parser/*.so)
+        languages []]
+    (each [_ fs (ipairs [syntax after-syntax parser])]
+      (each [_ f (ipairs fs)]
+        (table.insert languages f)))
+    (cb id languages)))
+
 ; get anchors : (id: string) -> [ id: string, anchors: string[] ]
-(fn get-anchor-list [id]
-  (let [anchor (require :ddc_source_neorg.anchor)
-        anchors (anchor.get-anchors)]
-    (cb id anchors)))
+(fn anchor_list [id]
+  (cb id (anchor.get_anchors)))
 
-; get local footnotes : (id: string) -> [ id: string, footnotes: string[] ]
-(fn get-local-footnote-list [id]
-  (let [link (require :ddc_source_neorg.link)
-        links (link.get-local-footnotes)]
-    (cb id links)))
+(local local_link
+       (let [
+             ; get local headings : (id: string, level: 1 | 2 | 3 | 4 | 5 | 6) -> [ id: string, headings: string[] ]
+             heading_list (fn [id level]
+                            (cb id (link.local.get_headings level)))
+             ; get local footnotes : (id: string) -> [ id: string, footnotes: string[] ]
+             footnote_list (fn [id]
+                             (cb id (link.local.get_footnotes)))
+             ; get local generic links : (id: string) -> [ id: string, links: string[] ]
+             generic_list (fn [id]
+                            (cb id (link.local.get_generics)))]
+         {: heading_list : footnote_list : generic_list}))
 
-; get local headings : (id: string, level: 1 | 2 | 3 | 4 | 5 | 6) -> [ id: string, headings: string[] ]
-(fn get-local-heading-list [id level]
-  (let [link (require :ddc_source_neorg.link)
-        links (link.get-local-headings level)]
-    (cb id links)))
+(local foreign_link
+       (let [
+             ; get foreign headings : (id: string, path: string, level: 1 | 2 | 3 | 4 | 5 | 6) -> [ id: string, headings: string[] ]
+             heading_list (fn [id path level]
+                            (cb id (link.foreign.get_headings path level)))
+             ; get foreign footnotes : (id: string, path: string) -> [ id: string, footnotes: string[] ]
+             footnote_list (fn [id path]
+                             (cb id (link.foreign.get_footnotes path)))
+             ; get foreign generic links : (id: string, path: string) -> [ id: string, links: string[] ]
+             generic_list (fn [id path]
+                            (cb id (link.foreign.get_generics path)))]
+         {: heading_list : footnote_list : generic_list}))
 
-; get local generic links : (id: string) -> [ id: string, links: string[] ]
-(fn get-local-generic-list [id]
-  (let [link (require :ddc_source_neorg.link)
-        links (link.get-local-generics)]
-    (cb id links)))
-
-(fn get-foreign-footnote-list [id path]
-  (let [link (require :ddc_source_neorg.link)
-        links (link.get-foreign-footnotes path)]
-    (cb id links)))
-
-(fn get-foreign-heading-list [id path level]
-  (let [link (require :ddc_source_neorg.link)
-        links (link.get-foreign-headings path level)]
-    (cb id links)))
-
-(fn get-foreign-generic-list [id path]
-  (let [link (require :ddc_source_neorg.link)
-        links (link.get-foreign-generics path)]
-    (cb id links)))
-
-{: get-current-buffer
- : get-language-list
- : get-current-workspace
- : get-anchor-list
- : get-local-footnote-list
- : get-local-heading-list
- : get-local-generic-list
- : get-foreign-footnote-list
- : get-foreign-heading-list
- : get-foreign-generic-list}
+{: current_buffer
+ : current_workspace
+ : language_list
+ : anchor_list
+ :local local_link
+ :foreign foreign_link}

@@ -15,22 +15,12 @@ local function get_runtime_files(path)
   end
   return tbl_21_auto
 end
-local function get_current_buffer(id)
+local anchor = require("ddc_source_neorg.anchor")
+local link = require("ddc_source_neorg.link")
+local function current_buffer(id)
   return cb(id, vim.api.nvim_buf_get_name(0))
 end
-local function get_language_list(id)
-  local syntax = get_runtime_files("syntax/*.vim")
-  local after_syntax = get_runtime_files("after/syntax/*.vim")
-  local parser = get_runtime_files("parser/*.so")
-  local files = {}
-  for _, fs in ipairs({syntax, after_syntax, parser}) do
-    for _0, f in ipairs(fs) do
-      table.insert(files, f)
-    end
-  end
-  return cb(id, {languages = files})
-end
-local function get_current_workspace(id)
+local function current_workspace(id)
   local neorg = require("neorg")
   local dirman = neorg.modules.get_module("core.dirman")
   local workspace = dirman.get_current_workspace()
@@ -38,39 +28,57 @@ local function get_current_workspace(id)
   local path = workspace[2]:tostring()
   return cb(id, {name = name, path = path})
 end
-local function get_anchor_list(id)
-  local anchor = require("ddc_source_neorg.anchor")
-  local anchors = anchor["get-anchors"]()
-  return cb(id, anchors)
+local function language_list(id)
+  local syntax = get_runtime_files("syntax/*.vim")
+  local after_syntax = get_runtime_files("after/syntax/*.vim")
+  local parser = get_runtime_files("parser/*.so")
+  local languages = {}
+  for _, fs in ipairs({syntax, after_syntax, parser}) do
+    for _0, f in ipairs(fs) do
+      table.insert(languages, f)
+    end
+  end
+  return cb(id, languages)
 end
-local function get_local_footnote_list(id)
-  local link = require("ddc_source_neorg.link")
-  local links = link["get-local-footnotes"]()
-  return cb(id, links)
+local function anchor_list(id)
+  return cb(id, anchor.get_anchors())
 end
-local function get_local_heading_list(id, level)
-  local link = require("ddc_source_neorg.link")
-  local links = link["get-local-headings"](level)
-  return cb(id, links)
+local local_link
+do
+  local heading_list
+  local function _2_(id, level)
+    return cb(id, link["local"].get_headings(level))
+  end
+  heading_list = _2_
+  local footnote_list
+  local function _3_(id)
+    return cb(id, link["local"].get_footnotes())
+  end
+  footnote_list = _3_
+  local generic_list
+  local function _4_(id)
+    return cb(id, link["local"].get_generics())
+  end
+  generic_list = _4_
+  local_link = {heading_list = heading_list, footnote_list = footnote_list, generic_list = generic_list}
 end
-local function get_local_generic_list(id)
-  local link = require("ddc_source_neorg.link")
-  local links = link["get-local-generics"]()
-  return cb(id, links)
+local foreign_link
+do
+  local heading_list
+  local function _5_(id, path, level)
+    return cb(id, link.foreign.get_headings(path, level))
+  end
+  heading_list = _5_
+  local footnote_list
+  local function _6_(id, path)
+    return cb(id, link.foreign.get_footnotes(path))
+  end
+  footnote_list = _6_
+  local generic_list
+  local function _7_(id, path)
+    return cb(id, link.foreign.get_generics(path))
+  end
+  generic_list = _7_
+  foreign_link = {heading_list = heading_list, footnote_list = footnote_list, generic_list = generic_list}
 end
-local function get_foreign_footnote_list(id, path)
-  local link = require("ddc_source_neorg.link")
-  local links = link["get-foreign-footnotes"](path)
-  return cb(id, links)
-end
-local function get_foreign_heading_list(id, path, level)
-  local link = require("ddc_source_neorg.link")
-  local links = link["get-foreign-headings"](path, level)
-  return cb(id, links)
-end
-local function get_foreign_generic_list(id, path)
-  local link = require("ddc_source_neorg.link")
-  local links = link["get-foreign-generics"](path)
-  return cb(id, links)
-end
-return {["get-current-buffer"] = get_current_buffer, ["get-language-list"] = get_language_list, ["get-current-workspace"] = get_current_workspace, ["get-anchor-list"] = get_anchor_list, ["get-local-footnote-list"] = get_local_footnote_list, ["get-local-heading-list"] = get_local_heading_list, ["get-local-generic-list"] = get_local_generic_list, ["get-foreign-footnote-list"] = get_foreign_footnote_list, ["get-foreign-heading-list"] = get_foreign_heading_list, ["get-foreign-generic-list"] = get_foreign_generic_list}
+return {current_buffer = current_buffer, current_workspace = current_workspace, language_list = language_list, anchor_list = anchor_list, ["local"] = local_link, foreign = foreign_link}

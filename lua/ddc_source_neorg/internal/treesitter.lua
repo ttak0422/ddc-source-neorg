@@ -13,6 +13,17 @@ end
 local function get_file_parser(language, file)
   return vim.treesitter.get_string_parser(file, language)
 end
+local function get_parser(language, source)
+  local _2_ = type(source)
+  if (_2_ == "string") then
+    return get_file_parser(language, source)
+  elseif (_2_ == "number") then
+    return get_bufnr_parser(language, util.normalize_bufnr(source))
+  else
+    local _ = _2_
+    return nil
+  end
+end
 local function execute_query(language, query, callback, bufnr)
   local query0 = parse_query(language, query)
   local parser = get_bufnr_parser(language, bufnr)
@@ -30,10 +41,10 @@ local function execute_query(language, query, callback, bufnr)
   end
 end
 local function get_bufnr_node_text(node, bufnr)
-  local _3_ = {node, bufnr}
-  if ((nil ~= _3_[1]) and (nil ~= _3_[2])) then
-    local node0 = _3_[1]
-    local source = _3_[2]
+  local _5_ = {node, bufnr}
+  if ((nil ~= _5_[1]) and (nil ~= _5_[2])) then
+    local node0 = _5_[1]
+    local source = _5_[2]
     local start_row, start_col = node0:start()
     local eof_row = vim.api.nvim_buf_line_count(source)
     local end_row, end_col = nil, nil
@@ -52,7 +63,7 @@ local function get_bufnr_node_text(node, bufnr)
       return table.concat(lines, "\\n")
     end
   else
-    local _ = _3_
+    local _ = _5_
     return ""
   end
 end
@@ -61,30 +72,26 @@ local function get_file_node_text(node, path)
   local _1, _2, end_bytes = node:end_()
   return string.sub(path, (start_bytes + 1), end_bytes)
 end
-local function get_node_text(node, src)
-  local _7_ = type(src)
-  if (_7_ == "string") then
-    return get_file_node_text(node, src)
-  elseif (_7_ == "number") then
-    return get_bufnr_node_text(node, src)
+local function get_node_text(node, source)
+  local _9_ = type(source)
+  if (_9_ == "string") then
+    return get_file_node_text(node, source)
+  elseif (_9_ == "number") then
+    return get_bufnr_node_text(node, util.normalize_bufnr(source))
   else
-    local _ = _7_
+    local _ = _9_
     return ""
   end
 end
-local function _9_(query)
+local norg
+local function _11_(source)
+  return get_parser("norg", source)
+end
+local function _12_(query)
   return parse_query("norg", query)
 end
-local function _10_(bufnr_3f)
-  return get_bufnr_parser("norg", util["normalize-bufnr"](bufnr_3f))
+local function _13_(query, callback, bufnr_3f)
+  return execute_query("norg", query, callback, util.normalize_bufnr(bufnr_3f))
 end
-local function _11_(file)
-  return get_file_parser("norg", file)
-end
-local function _12_(query, callback, bufnr_3f)
-  return execute_query("norg", query, callback, util["normalize-bufnr"](bufnr_3f))
-end
-local function _13_(node, bufnr_3f)
-  return get_node_text(node, util["normalize-bufnr"](bufnr_3f))
-end
-return {["parse-neorg-query"] = _9_, ["get-neorg-bufnr-parser"] = _10_, ["get-neorg-file-parser"] = _11_, ["execute-neorg-query"] = _12_, ["get-node-text"] = _13_}
+norg = {get_parser = _11_, parse_query = _12_, execute_query = _13_}
+return {norg = norg, get_node_text = get_node_text}
