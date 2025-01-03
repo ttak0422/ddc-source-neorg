@@ -14,8 +14,7 @@
      {/ test.txt}
 
 ***** foo lv5
-      {https://github.com}[GitHub]
-      {https://nixos.org}
+      [GitHub][{https://github.com}
 
 ****** foo lv6
        @code python

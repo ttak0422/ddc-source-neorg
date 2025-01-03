@@ -177,6 +177,7 @@ Deno.test("neighborhoodLink", () => {
 Deno.test("anchor", () => {
   assertTrue(anchor.test("["));
   assertTrue(anchor.test("test ["));
+  assertTrue(anchor.test("test [a"));
   assertFalse(anchor.test("}["));
 });
 
