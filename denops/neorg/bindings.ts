@@ -48,7 +48,7 @@ export async function getLanguageList(ctx: Context): Promise<Language[]> {
 
 export async function getAnchorList(ctx: Context): Promise<string[]> {
   const id = issueId();
-  const [anchors] = await Promise.all([
+  const [items] = await Promise.all([
     ctx.callback(id) as Promise<string[]>,
     ctx.denops.call(
       "luaeval",
@@ -56,7 +56,7 @@ export async function getAnchorList(ctx: Context): Promise<string[]> {
       { id },
     ),
   ]);
-  return anchors;
+  return items;
 }
 
 export async function getLocalHeadingList(
@@ -64,41 +64,41 @@ export async function getLocalHeadingList(
   level: HeadingLevel,
 ): Promise<string[]> {
   const id = issueId();
-  const [footnotes] = await Promise.all([
+  const [items] = await Promise.all([
     ctx.callback(id) as Promise<string[]>,
     ctx.denops.call(
       "luaeval",
-      "require('ddc_source_neorg').local.heading_list(_A.id, _A.level)",
+      "require('ddc_source_neorg')['local'].heading_list(_A.id, _A.level)",
       { id, level },
     ),
   ]);
-  return footnotes;
+  return items;
 }
 
 export async function getLocalFootnoteList(ctx: Context): Promise<string[]> {
   const id = issueId();
-  const [footnotes] = await Promise.all([
+  const [items] = await Promise.all([
     ctx.callback(id) as Promise<string[]>,
     ctx.denops.call(
       "luaeval",
-      "require('ddc_source_neorg').local.footnote_list(_A.id)",
+      "require('ddc_source_neorg')['local'].footnote_list(_A.id)",
       { id },
     ),
   ]);
-  return footnotes;
+  return items;
 }
 
 export async function getLocalGenericList(ctx: Context): Promise<string[]> {
   const id = issueId();
-  const [links] = await Promise.all([
+  const [items] = await Promise.all([
     ctx.callback(id) as Promise<string[]>,
     ctx.denops.call(
       "luaeval",
-      "require('ddc_source_neorg').local.generic_list(_A.id)",
+      "require('ddc_source_neorg')['local'].generic_list(_A.id)",
       { id },
     ),
   ]);
-  return links;
+  return items;
 }
 export async function getForeignHeadingList(
   ctx: Context,
@@ -106,7 +106,7 @@ export async function getForeignHeadingList(
   level: HeadingLevel,
 ): Promise<string[]> {
   const id = issueId();
-  const [footnotes] = await Promise.all([
+  const [items] = await Promise.all([
     ctx.callback(id) as Promise<string[]>,
     ctx.denops.call(
       "luaeval",
@@ -114,7 +114,7 @@ export async function getForeignHeadingList(
       { id, path, level },
     ),
   ]);
-  return footnotes;
+  return items;
 }
 
 export async function getForeignFootnoteList(
@@ -122,7 +122,7 @@ export async function getForeignFootnoteList(
   path: string,
 ): Promise<string[]> {
   const id = issueId();
-  const [footnotes] = await Promise.all([
+  const [items] = await Promise.all([
     ctx.callback(id) as Promise<string[]>,
     ctx.denops.call(
       "luaeval",
@@ -130,7 +130,7 @@ export async function getForeignFootnoteList(
       { id, path },
     ),
   ]);
-  return footnotes;
+  return items;
 }
 
 export async function getForeignGenericList(

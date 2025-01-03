@@ -17,8 +17,8 @@ export type Context = {
   callback: (id: string) => Promise<unknown>;
   // current input
   input: string;
-  // 0-indexed
-  lineNr: number;
+  // current input before cursor
+  inputBeforeCursor: string;
   completePos: number;
 };
 
@@ -31,6 +31,11 @@ export function isHeadingLevel(src: unknown): src is HeadingLevel {
   }
   return [...Array(6).keys()].map((i) => i + 1).includes(src);
 }
+
+/// ddc ///
+import { types } from "./deps/ddc.ts";
+
+export type CompletionItem = types.Item;
 
 /// util ///
 export type Result<T, E = Error> = [T, undefined] | [undefined, E];
