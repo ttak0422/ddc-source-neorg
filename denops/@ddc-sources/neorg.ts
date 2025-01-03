@@ -36,7 +36,6 @@ const sequentialLightwaightCompletion: (
   return (ctx) => findCompletable(ctx).next().value;
 })();
 
-/** @deprecated use individual completions instead. */
 export class Source extends source.BaseSource<Params> {
   override params(): Params {
     return {};
