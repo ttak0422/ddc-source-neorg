@@ -10,7 +10,7 @@ export const imageTag = /@image\s\w*$/;
 
 export const codeTag = /@code\s\w*$/;
 
-export const task = /[-*$~\^]\s\([^)]*$/;
+export const task = /[-*$~\^] \([ \-x_!+=?]?$/;
 
 export const localLink = /\{([\^#]|\*+)((?:\s\w*)|\s?)$/;
 
@@ -53,8 +53,20 @@ Deno.test("task", () => {
   assertTrue(task.test("$ ("));
   assertTrue(task.test("~ ("));
   assertTrue(task.test("^ ("));
+  assertTrue(task.test("- ( "));
+  assertTrue(task.test("* (-"));
+  assertTrue(task.test("$ (x"));
+  assertTrue(task.test("~ (_"));
+  assertTrue(task.test("^ (!"));
+  assertTrue(task.test("^ (+"));
+  assertTrue(task.test("^ (="));
+  assertTrue(task.test("^ (?"));
+  assertFalse(task.test("^ ()"));
   assertFalse(task.test("- ( )"));
   assertFalse(task.test("- ( ) "));
+  assertFalse(task.test("( )"));
+  assertFalse(task.test("test ( "));
+  assertFalse(task.test("test ( )"));
 });
 
 Deno.test("localLink", () => {

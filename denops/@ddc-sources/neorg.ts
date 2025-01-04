@@ -49,6 +49,7 @@ export class Source extends source.BaseSource<Params> {
     const ctx: Context = {
       denops,
       input: context.input,
+      nextInput: context.nextInput,
       inputBeforeCursor: context.input.slice(0, completePos),
       completePos,
       callback: onCallback,

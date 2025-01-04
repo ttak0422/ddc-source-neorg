@@ -13,11 +13,14 @@ import { Denops } from "./deps/denops.ts";
 
 export type Context = {
   denops: Denops;
-  // ddc callback
+  /** ddc callback */
   callback: (id: string) => Promise<unknown>;
-  // current input
   input: string;
-  // current input before cursor
+  nextInput: string;
+  /**
+   * current input before cursor
+   * @deprecated use input
+   */
   inputBeforeCursor: string;
   completePos: number;
 };

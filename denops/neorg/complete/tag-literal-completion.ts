@@ -67,19 +67,22 @@ export const codeTagItems = async (ctx: Context): Promise<CompletionItem[]> => {
   return candinates.map((c) => ({ word: c, menu: menu.language }));
 };
 
-export const taskItems: (ctx: Context) => CompletionItem[] =
-  makeSimpleStaticCompletion({
-    pattern: pattern.task,
-    // lighweight impl
-    candinates: [
-      { word: " ) ", abbr: "( ) undone" },
-      { word: "-) ", abbr: "(-) pending" },
-      { word: "x) ", abbr: "(x) done" },
-      { word: "_) ", abbr: "(_) cancelled" },
-      { word: "!) ", abbr: "(!) important" },
-      { word: "+) ", abbr: "(+) recurring" },
-      { word: "=) ", abbr: "(=) on hold" },
-      { word: "?) ", abbr: "(?) uncertain" },
-    ],
-    menu: menu.todo,
-  });
+export const taskItems = (ctx: Context): CompletionItem[] => {
+  if (!pattern.task.test(ctx.input)) {
+    return [];
+  }
+
+  const nextInputPrefix = ctx.nextInput.at(0) ?? "";
+  const completeSuffix = nextInputPrefix === ")" ? "" : ") ";
+  const src = [
+    { word: " ", abbr: "( ) undone" },
+    { word: "-", abbr: "(-) pending" },
+    { word: "x", abbr: "(x) done" },
+    { word: "_", abbr: "(_) cancelled" },
+    { word: "!", abbr: "(!) important" },
+    { word: "+", abbr: "(+) recurring" },
+    { word: "=", abbr: "(=) on hold" },
+    { word: "?", abbr: "(?) uncertain" },
+  ] as const;
+  return src.map((s) => ({ ...s, word: `${s.word}${completeSuffix}` }));
+};
