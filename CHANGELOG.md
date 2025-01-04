@@ -8,6 +8,12 @@ and this project adheres to
 
 ## [Untagged]
 
+## 0.1.1 2025-01-05
+
+### Fixed
+
+- task: consider input after the completion position (#1)
+
 ## [0.1.0] 2025-01-04
 
 ### Added
