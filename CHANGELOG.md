@@ -8,6 +8,12 @@ and this project adheres to
 
 ## [Untagged]
 
+## [0.2.0] 2025-01-11
+
+### Added
+
+- definition completion
+
 ## [0.1.1] 2025-01-05
 
 ### Fixed
