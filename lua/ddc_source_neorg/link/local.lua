@@ -6,7 +6,10 @@ end
 local function get_footnotes()
   return shared.get_links("footnote", 0)
 end
+local function get_definitions()
+  return shared.get_links("definition", 0)
+end
 local function get_generics()
   return shared.get_links("generic", 0)
 end
-return {get_headings = get_headings, get_footnotes = get_footnotes, get_generics = get_generics}
+return {get_headings = get_headings, get_footnotes = get_footnotes, get_definitions = get_definitions, get_generics = get_generics}

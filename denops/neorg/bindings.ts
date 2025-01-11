@@ -88,6 +88,19 @@ export async function getLocalFootnoteList(ctx: Context): Promise<string[]> {
   return items;
 }
 
+export async function getLocalDefinitionList(ctx: Context): Promise<string[]> {
+  const id = issueId();
+  const [items] = await Promise.all([
+    ctx.callback(id) as Promise<string[]>,
+    ctx.denops.call(
+      "luaeval",
+      "require('ddc_source_neorg')['local'].definition_list(_A.id)",
+      { id },
+    ),
+  ]);
+  return items;
+}
+
 export async function getLocalGenericList(ctx: Context): Promise<string[]> {
   const id = issueId();
   const [items] = await Promise.all([
@@ -127,6 +140,22 @@ export async function getForeignFootnoteList(
     ctx.denops.call(
       "luaeval",
       "require('ddc_source_neorg').foreign.footnote_list(_A.id, _A.path)",
+      { id, path },
+    ),
+  ]);
+  return items;
+}
+
+export async function getForeignDefiinitionList(
+  ctx: Context,
+  path: string,
+): Promise<string[]> {
+  const id = issueId();
+  const [items] = await Promise.all([
+    ctx.callback(id) as Promise<string[]>,
+    ctx.denops.call(
+      "luaeval",
+      "require('ddc_source_neorg').foreign.definition_list(_A.id, _A.path)",
       { id, path },
     ),
   ]);

@@ -37,31 +37,46 @@
 (fn anchor_list [id]
   (cb id (anchor.get_anchors)))
 
-(local local_link
-       (let [
-             ; get local headings : (id: string, level: 1 | 2 | 3 | 4 | 5 | 6) -> [ id: string, headings: string[] ]
-             heading_list (fn [id level]
-                            (cb id (link.local.get_headings level)))
-             ; get local footnotes : (id: string) -> [ id: string, footnotes: string[] ]
-             footnote_list (fn [id]
-                             (cb id (link.local.get_footnotes)))
-             ; get local generic links : (id: string) -> [ id: string, links: string[] ]
-             generic_list (fn [id]
-                            (cb id (link.local.get_generics)))]
-         {: heading_list : footnote_list : generic_list}))
+(local local_link (let [
+                        ; get local headings : (id: string, level: 1 | 2 | 3 | 4 | 5 | 6) -> [ id: string, headings: string[] ]
+                        heading_list (fn [id level]
+                                       (cb id (link.local.get_headings level)))
+                        ; get local footnotes : (id: string) -> [ id: string, footnotes: string[] ]
+                        footnote_list (fn [id]
+                                        (cb id (link.local.get_footnotes)))
+                        ; get local definitions : (id: string) -> [ id: string, definitions: string[] ]
+                        definition_list (fn [id]
+                                          (cb id (link.local.get_definitions)))
+                        ; get local generic links : (id: string) -> [ id: string, links: string[] ]
+                        generic_list (fn [id]
+                                       (cb id (link.local.get_generics)))]
+                    {: heading_list
+                     : footnote_list
+                     : definition_list
+                     : generic_list}))
 
-(local foreign_link
-       (let [
-             ; get foreign headings : (id: string, path: string, level: 1 | 2 | 3 | 4 | 5 | 6) -> [ id: string, headings: string[] ]
-             heading_list (fn [id path level]
-                            (cb id (link.foreign.get_headings path level)))
-             ; get foreign footnotes : (id: string, path: string) -> [ id: string, footnotes: string[] ]
-             footnote_list (fn [id path]
-                             (cb id (link.foreign.get_footnotes path)))
-             ; get foreign generic links : (id: string, path: string) -> [ id: string, links: string[] ]
-             generic_list (fn [id path]
-                            (cb id (link.foreign.get_generics path)))]
-         {: heading_list : footnote_list : generic_list}))
+(local foreign_link (let [
+                          ; get foreign headings : (id: string, path: string, level: 1 | 2 | 3 | 4 | 5 | 6) -> [ id: string, headings: string[] ]
+                          heading_list (fn [id path level]
+                                         (cb id
+                                             (link.foreign.get_headings path
+                                                                        level)))
+                          ; get foreign footnotes : (id: string, path: string) -> [ id: string, footnotes: string[] ]
+                          footnote_list (fn [id path]
+                                          (cb id
+                                              (link.foreign.get_footnotes path)))
+                          ; get foreign definitions : (id: string, path: string) -> [ id: string, definitions: string[] ]
+                          definition_list (fn [id path]
+                                            (cb id
+                                                (link.foreign.get_definitions path)))
+                          ; get foreign generic links : (id: string, path: string) -> [ id: string, links: string[] ]
+                          generic_list (fn [id path]
+                                         (cb id
+                                             (link.foreign.get_generics path)))]
+                      {: heading_list
+                       : footnote_list
+                       : definition_list
+                       : generic_list}))
 
 {: current_buffer
  : current_workspace

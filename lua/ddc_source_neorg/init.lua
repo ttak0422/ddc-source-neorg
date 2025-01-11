@@ -55,30 +55,40 @@ do
     return cb(id, link["local"].get_footnotes())
   end
   footnote_list = _3_
-  local generic_list
+  local definition_list
   local function _4_(id)
+    return cb(id, link["local"].get_definitions())
+  end
+  definition_list = _4_
+  local generic_list
+  local function _5_(id)
     return cb(id, link["local"].get_generics())
   end
-  generic_list = _4_
-  local_link = {heading_list = heading_list, footnote_list = footnote_list, generic_list = generic_list}
+  generic_list = _5_
+  local_link = {heading_list = heading_list, footnote_list = footnote_list, definition_list = definition_list, generic_list = generic_list}
 end
 local foreign_link
 do
   local heading_list
-  local function _5_(id, path, level)
+  local function _6_(id, path, level)
     return cb(id, link.foreign.get_headings(path, level))
   end
-  heading_list = _5_
+  heading_list = _6_
   local footnote_list
-  local function _6_(id, path)
+  local function _7_(id, path)
     return cb(id, link.foreign.get_footnotes(path))
   end
-  footnote_list = _6_
+  footnote_list = _7_
+  local definition_list
+  local function _8_(id, path)
+    return cb(id, link.foreign.get_definitions(path))
+  end
+  definition_list = _8_
   local generic_list
-  local function _7_(id, path)
+  local function _9_(id, path)
     return cb(id, link.foreign.get_generics(path))
   end
-  generic_list = _7_
-  foreign_link = {heading_list = heading_list, footnote_list = footnote_list, generic_list = generic_list}
+  generic_list = _9_
+  foreign_link = {heading_list = heading_list, footnote_list = footnote_list, definition_list = definition_list, generic_list = generic_list}
 end
 return {current_buffer = current_buffer, current_workspace = current_workspace, language_list = language_list, anchor_list = anchor_list, ["local"] = local_link, foreign = foreign_link}

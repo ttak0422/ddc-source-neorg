@@ -12,9 +12,9 @@ export const codeTag = /@code\s\w*$/;
 
 export const task = /[-*$~\^] \([ \-x_!+=?]?$/;
 
-export const localLink = /\{([\^#]|\*+)((?:\s\w*)|\s?)$/;
+export const localLink = /\{([\^#$]|\*+)((?:\s\w*)|\s?)$/;
 
-export const foreignLink = /\{:(.+):([\^#]|\*+)((?:\s\w*)|\s?)$/;
+export const foreignLink = /\{:(.+):([\^#$]|\*+)((?:\s\w*)|\s?)$/;
 
 export const neighborhoodLink = /\{(?:[#$\^]|\*+) ([^}]*)\}\[/;
 
@@ -101,6 +101,19 @@ Deno.test("localLink", () => {
   assertTrue(localLink.test(" {^ fo"));
   assertEquals(localLink.exec(" {^ fo")?.[1], "^");
   assertEquals(localLink.exec(" {^ fo")?.[2], " fo");
+  // definition
+  assertTrue(localLink.test("{$"));
+  assertEquals(localLink.exec("{$")?.[1], "$");
+  assertEquals(localLink.exec("{$")?.[2], "");
+  assertTrue(localLink.test("{$ fo"));
+  assertEquals(localLink.exec("{$ fo")?.[1], "$");
+  assertEquals(localLink.exec("{$ fo")?.[2], " fo");
+  assertTrue(localLink.test(" {$ "));
+  assertEquals(localLink.exec(" {$ ")?.[1], "$");
+  assertEquals(localLink.exec(" {$ ")?.[2], " ");
+  assertTrue(localLink.test(" {$ fo"));
+  assertEquals(localLink.exec(" {$ fo")?.[1], "$");
+  assertEquals(localLink.exec(" {$ fo")?.[2], " fo");
   // generic
   assertTrue(localLink.test("{#"));
   assertEquals(localLink.exec("{#")?.[1], "#");
@@ -152,6 +165,23 @@ Deno.test("foreignLink", () => {
   assertEquals(foreignLink.exec(" {:foo:^ fo")?.[1], "foo");
   assertEquals(foreignLink.exec(" {:foo:^ fo")?.[2], "^");
   assertEquals(foreignLink.exec(" {:foo:^ fo")?.[3], " fo");
+  // definition
+  assertTrue(foreignLink.test("{:foo:$"));
+  assertEquals(foreignLink.exec("{:foo:$")?.[1], "foo");
+  assertEquals(foreignLink.exec("{:foo:$")?.[2], "$");
+  assertEquals(foreignLink.exec("{:foo:$")?.[3], "");
+  assertTrue(foreignLink.test("{:foo:$ fo"));
+  assertEquals(foreignLink.exec("{:foo:$ fo")?.[1], "foo");
+  assertEquals(foreignLink.exec("{:foo:$ fo")?.[2], "$");
+  assertEquals(foreignLink.exec("{:foo:$ fo")?.[3], " fo");
+  assertTrue(foreignLink.test(" {:foo:$ "));
+  assertEquals(foreignLink.exec(" {:foo:$ ")?.[1], "foo");
+  assertEquals(foreignLink.exec(" {:foo:$ ")?.[2], "$");
+  assertEquals(foreignLink.exec(" {:foo:$ ")?.[3], " ");
+  assertTrue(foreignLink.test(" {:foo:$ fo"));
+  assertEquals(foreignLink.exec(" {:foo:$ fo")?.[1], "foo");
+  assertEquals(foreignLink.exec(" {:foo:$ fo")?.[2], "$");
+  assertEquals(foreignLink.exec(" {:foo:$ fo")?.[3], " fo");
   // generic
   assertTrue(foreignLink.test("{:foo:#"));
   assertEquals(foreignLink.exec("{:foo:#")?.[1], "foo");

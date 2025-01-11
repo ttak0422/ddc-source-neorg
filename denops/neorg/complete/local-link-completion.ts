@@ -1,4 +1,5 @@
 import {
+  getLocalDefinitionList,
   getLocalFootnoteList,
   getLocalGenericList,
   getLocalHeadingList,
@@ -30,6 +31,8 @@ export const localLinkItems = async (
       }
       case "^":
         return await getLocalFootnoteList(ctx);
+      case "$":
+        return await getLocalDefinitionList(ctx);
       case "#":
         return await getLocalGenericList(ctx);
       default:

@@ -6,7 +6,10 @@
 (fn get_footnotes [path]
   (shared.get_links :footnote path))
 
+(fn get_definitions [path]
+  (shared.get_links :definition path))
+
 (fn get_generics [path]
   (shared.get_links :generic path))
 
-{: get_headings : get_footnotes : get_generics}
+{: get_headings : get_footnotes : get_definitions : get_generics}

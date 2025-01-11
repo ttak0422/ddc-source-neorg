@@ -1,4 +1,5 @@
 import {
+  getForeignDefiinitionList,
   getForeignFootnoteList,
   getForeignGenericList,
   getForeignHeadingList,
@@ -37,6 +38,8 @@ export const foreignLinkItems = async (
       }
       case "^":
         return await getForeignFootnoteList(ctx, path);
+      case "$":
+        return await getForeignDefiinitionList(ctx, path);
       case "#":
         return await getForeignGenericList(ctx, path);
       default:

@@ -6,7 +6,10 @@
 (fn get_footnotes []
   (shared.get_links :footnote 0))
 
+(fn get_definitions []
+  (shared.get_links :definition 0))
+
 (fn get_generics []
   (shared.get_links :generic 0))
 
-{: get_headings : get_footnotes : get_generics}
+{: get_headings : get_footnotes : get_definitions : get_generics}
